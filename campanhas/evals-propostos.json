@@ -1,0 +1,23 @@
+{
+  "skill_name": "construcao-orquestrada",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Quero uma skill pequena chamada `changelog-pt` que lê o `git log` desde a última tag e gera um CHANGELOG em português agrupado por tipo (feat, fix, docs, chore), ignorando merges e commits de bot. Premissas minhas: não pode inventar entradas que não estão no log, tem que funcionar em repo sem nenhuma tag (pega o histórico todo) e o resultado tem que caber em uma tela por versão. Constrói ela do zero com agentes, testa e corrige até funcionar — do jeito que fizemos a codebase-specialists. Workspace em ~/.claude/skills/changelog-pt-workspace.",
+      "expected_output": "Cria o workspace com .construcao/state.json, obra.json5 (critério de parada numérico) e pontos.json5 com as 3 premissas literais, cada uma ligada a cenário de aceite. Para no portão `stop` e gera aprovar-*.sh sem executá-lo. O oráculo (testes de aceite + evals.json do skill-creator com gabarito de repos-fixture, incluindo repo sem tag e commit de bot) é escrito por agente diferente do construtor, roda 100% vermelho antes do código e é congelado por hash após o portão `oracle:requisito`. Roda o baseline sem a skill uma vez. Constrói em frentes com arquivos disjuntos (≤3 subagentes), integra rodando todas as suítes, mede [Q] vs baseline separado de [S] com custo ao lado, e fecha a rodada com pontos atualizados e RETOMADA.md válido. Nunca aprova portão humano sozinho; qualquer aprovação de eval aparece como simulada.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Constrói uma ferramenta CLI em Python puro, `jsonl-diff`, que compara dois arquivos JSONL por uma chave (`--key id`) e imprime registros adicionados, removidos e alterados (com o caminho do campo que mudou). Tem que rodar em Python 3.9 e 3.13, aguentar arquivo de 1 GB sem carregar tudo na memória, e sair com código 1 quando houver diferença (para usar em CI). Usa equipe de agentes, prova mecânica e autocorreção; quero acompanhar por rodada porque tenho limite de uso de 5h.",
+      "expected_output": "Registra as premissas (2 runtimes, memória limitada, exit code) como pontos com cenário cada uma; o oráculo inclui teste de aceite por premissa (inclusive um de memória com arquivo grande gerado, com teto medido) escrito por agente separado, vermelho antes do código. Não há baseline comparável e a dispensa é registrada com motivo (modo requisito). PLANO.json5 fixa o contrato de nomes (flags, formato de saída, códigos de saída) antes das frentes; `plan check` prova disjunção e que nenhuma frente toca o oráculo. regressao.json5 lista itens executáveis (suítes em 3.9 e 3.13, oráculo intacto, instalação limpa em diretório temporário, doctest README↔--help) e é rodado por script. Orçamento em rodadas/horas/subagentes; checkpoint e pergunta ao passar ~50% da janela; RETOMADA.md autocontido com o comando de retomada. Defeitos medidos viram campanha(s) auto-correcao classificadas (sistema/oráculo/ambiente/executor).",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "No repo ~/Repositorios/loja-api (FastAPI + SQLAlchemy, tem testes com pytest), quero uma feature nova: exportar pedidos em CSV por período (`GET /pedidos/export?de=&ate=`), com paginação em streaming, só para usuário admin, e auditoria de quem exportou. Ao mesmo tempo tem dois bugs abertos na listagem de pedidos (fuso horário errado e filtro de status ignorado). Constrói a feature e corrige os bugs com agentes em paralelo, sem quebrar nada que já existe, e me deixa aprovar o commit.",
+      "expected_output": "Confere a premissa (repo existe, suíte atual roda) antes de planejar e mede a suíte existente como linha de base de não regressão. Separa em obra (feature, oráculo de requisito: testes de aceite de rota, permissão admin, streaming e auditoria escritos por agente separado) e campanhas auto-correcao para os 2 bugs (cada um com teste que falha antes). Usa `co.py collide` para decidir sobreposição: se os bugs tocam os mesmos arquivos da listagem que a feature, a campanha espera a integração e re-mede o base; se disjuntos, roda o oráculo dela enquanto a feature integra. Integração serial com trava; portão de regressão roda a suíte inteira + oráculos de todas as campanhas fechadas. Usa verificador cego (orquestrar-subagentes) para afirmação de alta severidade como 'admin-only garantido'. Para no portão de commit gerando aprovar-*.sh; não roda git commit sem aprovação humana. Estado e artefatos ficam fora do repo-alvo.",
+      "files": []
+    }
+  ]
+}

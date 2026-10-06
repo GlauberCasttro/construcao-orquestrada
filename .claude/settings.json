@@ -1,0 +1,45 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/tools/guard-git.sh\"",
+            "timeout": 30,
+            "statusMessage": "guard-git (harness-dev)..."
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/tools/ac/hook_aprovacao.py\"",
+            "timeout": 30,
+            "statusMessage": "hook de aprovação (motor embutido)..."
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/tools/guard-entrega.py\"",
+            "timeout": 30,
+            "statusMessage": "guard-entrega (harness-dev)..."
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/tools/carimbo.sh\" --brief",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

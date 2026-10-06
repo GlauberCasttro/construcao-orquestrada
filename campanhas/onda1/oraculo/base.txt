@@ -1,0 +1,154 @@
+# base do oráculo onda 1 (O1) — 2026-10-04T16:09:43Z — Python 3.13.3
+# estado: scripts/ inexistente (ls: scripts: No such file or directory); references/hook-settings.json5: ausente
+# esperado: TODOS vermelhos, falhando limpo no setUp (script ausente), nenhum verde por vácuo
+
+## visíveis — python3 -m unittest discover -s tests/onda1 -t tests/onda1 -v
+test_escolhas_invalidas_saem_2_pelo_argparse (test_a_cli.TestDispatcher.test_escolhas_invalidas_saem_2_pelo_argparse) ... FAIL
+test_help_global_lista_os_20_subcomandos_e_work (test_a_cli.TestDispatcher.test_help_global_lista_os_20_subcomandos_e_work) ... FAIL
+test_negativos_que_valem_com_ou_sem_handler (test_a_cli.TestDispatcher.test_negativos_que_valem_com_ou_sem_handler) ... FAIL
+test_nenhum_subcomando_termina_em_traceback_e_pendente_tem_formato (test_a_cli.TestDispatcher.test_nenhum_subcomando_termina_em_traceback_e_pendente_tem_formato) ... FAIL
+test_sem_work_sai_2 (test_a_cli.TestDispatcher.test_sem_work_sai_2) ... FAIL
+test_subcomando_desconhecido_sai_2 (test_a_cli.TestDispatcher.test_subcomando_desconhecido_sai_2) ... FAIL
+test_todo_subcomando_do_contrato_tem_help_com_flags_e_acoes (test_a_cli.TestDispatcher.test_todo_subcomando_do_contrato_tem_help_com_flags_e_acoes) ... FAIL
+test_campanhas_abertas_com_tentativas_no_teto_vai_para_replanejar (test_a_estado.TestEvGuardas.test_campanhas_abertas_com_tentativas_no_teto_vai_para_replanejar) ... FAIL
+test_desistir_vai_para_ah_abandonar_e_gera_aprovar_sh (test_a_estado.TestEvGuardas.test_desistir_vai_para_ah_abandonar_e_gera_aprovar_sh) ... FAIL
+test_evento_inexistente_sai_2 (test_a_estado.TestEvGuardas.test_evento_inexistente_sai_2) ... FAIL
+test_evento_que_nao_sai_do_estado_atual_nao_grava (test_a_estado.TestEvGuardas.test_evento_que_nao_sai_do_estado_atual_nao_grava) ... FAIL
+test_iniciar_sem_hook_vivo_sai_1_e_ledger_byte_a_byte (test_a_estado.TestEvGuardas.test_iniciar_sem_hook_vivo_sai_1_e_ledger_byte_a_byte) ... FAIL
+test_novo_plano_incrementa_replanejamentos_e_zera_tentativas (test_a_estado.TestEvGuardas.test_novo_plano_incrementa_replanejamentos_e_zera_tentativas) ... FAIL
+test_novo_plano_no_teto_sai_1_e_ledger_inalterado (test_a_estado.TestEvGuardas.test_novo_plano_no_teto_sai_1_e_ledger_inalterado) ... FAIL
+test_transicao_humana_via_ev_sai_2_D9_I6 (test_a_estado.TestEvGuardas.test_transicao_humana_via_ev_sai_2_D9_I6) ... FAIL
+test_vermelho_com_tentativas_no_teto_vai_para_replanejar (test_a_estado.TestEvGuardas.test_vermelho_com_tentativas_no_teto_vai_para_replanejar) ... FAIL
+test_init_cria_obra_pontos_e_genese_no_formato (test_a_estado.TestInit.test_init_cria_obra_pontos_e_genese_no_formato) ... FAIL
+test_init_em_obra_existente_nao_reescreve_o_ledger (test_a_estado.TestInit.test_init_em_obra_existente_nao_reescreve_o_ledger) ... FAIL
+test_init_tipo_invalido_sai_2 (test_a_estado.TestInit.test_init_tipo_invalido_sai_2) ... FAIL
+test_init_workspace_dentro_do_alvo_sai_2_e_nada_cria (test_a_estado.TestInit.test_init_workspace_dentro_do_alvo_sai_2_e_nada_cria) ... FAIL
+test_iniciar_com_hook_vivo_vai_para_premissas (test_a_estado.TestIntegracaoHookVivo.test_iniciar_com_hook_vivo_vai_para_premissas) ... FAIL
+test_ah_guarda_portao_e_retorno_no_fold (test_a_estado.TestLedgerEFold.test_ah_guarda_portao_e_retorno_no_fold) ... FAIL
+test_cada_ev_estende_a_cadeia_pela_regra_de_formatos (test_a_estado.TestLedgerEFold.test_cada_ev_estende_a_cadeia_pela_regra_de_formatos) ... FAIL
+test_fold_dobra_registros_validos_gravados_no_ledger (test_a_estado.TestLedgerEFold.test_fold_dobra_registros_validos_gravados_no_ledger) ... FAIL
+test_ledger_vence_o_cache_adulterado (test_a_estado.TestLedgerEFold.test_ledger_vence_o_cache_adulterado) ... FAIL
+test_nota_nao_muda_estado_nem_hash_estado (test_a_estado.TestLedgerEFold.test_nota_nao_muda_estado_nem_hash_estado) ... FAIL
+test_status_json_tem_os_campos_e_hash_estado_D8 (test_a_estado.TestLedgerEFold.test_status_json_tem_os_campos_e_hash_estado_D8) ... FAIL
+test_I1_estado_orfao (test_a_estado.TestMaquinaCheck.test_I1_estado_orfao) ... FAIL
+test_I2_estado_trancado (test_a_estado.TestMaquinaCheck.test_I2_estado_trancado) ... FAIL
+test_I3_atalho_que_pula_verificar (test_a_estado.TestMaquinaCheck.test_I3_atalho_que_pula_verificar) ... FAIL
+test_I4_lote_ok_sem_incrementa (test_a_estado.TestMaquinaCheck.test_I4_lote_ok_sem_incrementa) ... FAIL
+test_I5_guardas_sobrepostas (test_a_estado.TestMaquinaCheck.test_I5_guardas_sobrepostas) ... FAIL
+test_I6_transicao_humana_fora_de_aguardando_humano (test_a_estado.TestMaquinaCheck.test_I6_transicao_humana_fora_de_aguardando_humano) ... FAIL
+test_I7_reentrada_direta_no_oraculo (test_a_estado.TestMaquinaCheck.test_I7_reentrada_direta_no_oraculo) ... FAIL
+test_json_invalido_sai_2 (test_a_estado.TestMaquinaCheck.test_json_invalido_sai_2) ... FAIL
+test_maquina_real_passa (test_a_estado.TestMaquinaCheck.test_maquina_real_passa) ... FAIL
+test_limite_uso_por_janela_nao_recua_o_teto (test_a_estado.TestPausa.test_limite_uso_por_janela_nao_recua_o_teto) ... FAIL
+test_limite_uso_rate_limit_pausa_incrementa_e_recua_o_teto (test_a_estado.TestPausa.test_limite_uso_rate_limit_pausa_incrementa_e_recua_o_teto) ... FAIL
+test_retomar_antes_do_prazo_sai_1_e_ledger_inalterado (test_a_estado.TestPausa.test_retomar_antes_do_prazo_sai_1_e_ledger_inalterado) ... FAIL
+test_retomar_com_pausas_no_teto_vai_para_ah_continuar (test_a_estado.TestPausa.test_retomar_com_pausas_no_teto_vai_para_ah_continuar) ... FAIL
+test_retomar_volta_ao_retorno_e_recuo_dura_o_resto_da_obra (test_a_estado.TestPausa.test_retomar_volta_ao_retorno_e_recuo_dura_o_resto_da_obra) ... FAIL
+test_retomar_cli_com_cadeia_ok_sai_0_e_grava_retomada (test_a_estado.TestRetomada.test_retomar_cli_com_cadeia_ok_sai_0_e_grava_retomada) ... FAIL
+test_retomar_com_linha_do_ledger_editada_sai_1 (test_a_estado.TestRetomada.test_retomar_com_linha_do_ledger_editada_sai_1) ... FAIL
+test_retomar_md_regenerado_a_cada_ev (test_a_estado.TestRetomada.test_retomar_md_regenerado_a_cada_ev) ... FAIL
+test_retomar_nao_acusa_perdida_quando_retornou (test_a_estado.TestRetomada.test_retomar_nao_acusa_perdida_quando_retornou) ... FAIL
+test_vivos_contam_todo_subagente_so_por_despachada (test_a_estado.TestRetomada.test_vivos_contam_todo_subagente_so_por_despachada) ... FAIL
+test_write_ahead_conta_vivo_e_retomar_detecta_task_em_voo_perdida (test_a_estado.TestRetomada.test_write_ahead_conta_vivo_e_retomar_detecta_task_em_voo_perdida) ... FAIL
+test_abandonar_de_qualquer_portao (test_b_aprovar.TestAprovarNoTerminal.test_abandonar_de_qualquer_portao) ... FAIL
+test_aprovado_no_tty_grava_arquivo_evento_transicao_e_audit (test_b_aprovar.TestAprovarNoTerminal.test_aprovado_no_tty_grava_arquivo_evento_transicao_e_audit) ... FAIL
+test_audit_dentro_do_workspace_sai_1_e_nada_gravado (test_b_aprovar.TestAprovarNoTerminal.test_audit_dentro_do_workspace_sai_1_e_nada_gravado) ... FAIL
+test_desafio_errado_sai_1_e_nada_gravado (test_b_aprovar.TestAprovarNoTerminal.test_desafio_errado_sai_1_e_nada_gravado) ... FAIL
+test_desafio_varia_entre_chamadas (test_b_aprovar.TestAprovarNoTerminal.test_desafio_varia_entre_chamadas) ... FAIL
+test_rejeitado_no_portao_stop_volta_a_premissas (test_b_aprovar.TestAprovarNoTerminal.test_rejeitado_no_portao_stop_volta_a_premissas) ... FAIL
+test_sem_tty_sai_2_e_nada_gravado (test_b_aprovar.TestAprovarSemTerminal.test_sem_tty_sai_2_e_nada_gravado) ... FAIL
+test_variaveis_de_ambiente_nao_dispensam_o_tty (test_b_aprovar.TestAprovarSemTerminal.test_variaveis_de_ambiente_nao_dispensam_o_tty) ... FAIL
+test_bloqueia_aprovacao_pelo_principal_com_variacoes (test_b_hook.TestHookAprovacao.test_bloqueia_aprovacao_pelo_principal_com_variacoes) ... FAIL
+test_bloqueia_aprovacao_por_subagente (test_b_hook.TestHookAprovacao.test_bloqueia_aprovacao_por_subagente) ... FAIL
+test_permite_comandos_benignos_inclusive_co_py_nao_aprovador (test_b_hook.TestHookAprovacao.test_permite_comandos_benignos_inclusive_co_py_nao_aprovador) ... FAIL
+test_permite_ferramentas_de_leitura_e_escrita_fora_dos_protegidos (test_b_hook.TestHookAprovacao.test_permite_ferramentas_de_leitura_e_escrita_fora_dos_protegidos) ... FAIL
+test_bloqueio_e_chamada_que_cita_co_py_vao_ao_audit_fora_do_ws (test_b_hook.TestHookAudit.test_bloqueio_e_chamada_que_cita_co_py_vao_ao_audit_fora_do_ws) ... FAIL
+test_payload_quebrado_so_bloqueia_se_menciona_aprovacao_ou_heldout (test_b_hook.TestHookFalhaFechada.test_payload_quebrado_so_bloqueia_se_menciona_aprovacao_ou_heldout) ... FAIL
+test_bloqueia_escrita_no_estado_e_nas_aprovacoes (test_b_hook.TestHookProtegidos.test_bloqueia_escrita_no_estado_e_nas_aprovacoes) ... FAIL
+test_bloqueia_leitura_do_heldout_por_construtor (test_b_hook.TestHookProtegidos.test_bloqueia_leitura_do_heldout_por_construtor) ... FAIL
+test_oraculo_so_o_autor_do_manifest_escreve (test_b_hook.TestHookProtegidos.test_oraculo_so_o_autor_do_manifest_escreve) ... FAIL
+test_subagente_sem_agent_type_falha_fechado (test_b_hook.TestHookProtegidos.test_subagente_sem_agent_type_falha_fechado) ... FAIL
+test_hook_settings_json5 (test_b_hook.TestHookSelftestESettings.test_hook_settings_json5) ... FAIL
+test_hook_via_co_py_le_o_payload_do_stdin (test_b_hook.TestHookSelftestESettings.test_hook_via_co_py_le_o_payload_do_stdin) ... FAIL
+test_payloads_selftest_cobre_a_matriz_do_desenho (test_b_hook.TestHookSelftestESettings.test_payloads_selftest_cobre_a_matriz_do_desenho) ... FAIL
+test_selftest_estatico_sai_0 (test_b_hook.TestHookSelftestESettings.test_selftest_estatico_sai_0) ... FAIL
+L03: o selftest precisa exercitar a decisão de verdade (contrato.modulos.co_hook.classificar). ... FAIL
+test_selftest_via_co_py (test_b_hook.TestHookSelftestESettings.test_selftest_via_co_py) ... FAIL
+test_selftest_vivo_exige_o_bloqueio_registrado_no_audit (test_b_hook.TestHookSelftestESettings.test_selftest_vivo_exige_o_bloqueio_registrado_no_audit) ... FAIL
+test_g0_passa_com_oraculo_intacto (test_c_portao.TestG0.test_g0_passa_com_oraculo_intacto) ... FAIL
+test_g0_reprova_com_assercao_removida (test_c_portao.TestG0.test_g0_reprova_com_assercao_removida) ... FAIL
+test_g1_passa_com_suite_verde_e_testes_coletados (test_c_portao.TestG1.test_g1_passa_com_suite_verde_e_testes_coletados) ... FAIL
+test_g1_reprova_com_teste_falhando (test_c_portao.TestG1.test_g1_reprova_com_teste_falhando) ... FAIL
+test_g1_reprova_ferramenta_ausente (test_c_portao.TestG1.test_g1_reprova_ferramenta_ausente) ... FAIL
+test_g1_reprova_suite_que_sai_0_sem_coletar_teste (test_c_portao.TestG1.test_g1_reprova_suite_que_sai_0_sem_coletar_teste) ... FAIL
+test_arquivo_fora_do_territorio_reprova (test_c_portao.TestG3Territorio.test_arquivo_fora_do_territorio_reprova) ... FAIL
+test_delecao_fora_do_territorio_reprova (test_c_portao.TestG3Territorio.test_delecao_fora_do_territorio_reprova) ... FAIL
+test_mudanca_dentro_do_territorio_passa (test_c_portao.TestG3Territorio.test_mudanca_dentro_do_territorio_passa) ... FAIL
+test_rename_de_fora_para_dentro_reprova (test_c_portao.TestG3Territorio.test_rename_de_fora_para_dentro_reprova) ... FAIL
+test_task_desconhecida_ou_base_invalida_sai_2 (test_c_portao.TestG3Territorio.test_task_desconhecida_ou_base_invalida_sai_2) ... FAIL
+test_assert_true_reprova (test_c_portao.TestG4Gaming.test_assert_true_reprova) ... FAIL
+test_edicao_de_teste_reprova_mesmo_dentro_do_territorio (test_c_portao.TestG4Gaming.test_edicao_de_teste_reprova_mesmo_dentro_do_territorio) ... FAIL
+test_literal_do_heldout_no_codigo_reprova (test_c_portao.TestG4Gaming.test_literal_do_heldout_no_codigo_reprova) ... FAIL
+test_pytest_skip_novo_reprova (test_c_portao.TestG4Gaming.test_pytest_skip_novo_reprova) ... FAIL
+test_sys_exit_de_main_nao_e_gaming (test_c_portao.TestG4Gaming.test_sys_exit_de_main_nao_e_gaming) ... FAIL
+test_sys_exit_zero_reprova (test_c_portao.TestG4Gaming.test_sys_exit_zero_reprova) ... FAIL
+test_gerar_regressao_tem_os_15_itens_com_na_e_waiver (test_c_portao.TestRegressao.test_gerar_regressao_tem_os_15_itens_com_na_e_waiver) ... FAIL
+test_aprovacao_no_ledger_sem_linha_no_audit_e_no_go (test_c_portao.TestVeredito.test_aprovacao_no_ledger_sem_linha_no_audit_e_no_go) ... FAIL
+test_fail_e_no_go (test_c_portao.TestVeredito.test_fail_e_no_go) ... FAIL
+test_item_sem_waiver_dispensado_e_no_go (test_c_portao.TestVeredito.test_item_sem_waiver_dispensado_e_no_go) ... FAIL
+test_no_go_vence_simulado (test_c_portao.TestVeredito.test_no_go_vence_simulado) ... FAIL
+test_selftest_do_portao_sai_0 (test_c_portao.TestVeredito.test_selftest_do_portao_sai_0) ... FAIL
+test_simulado_vence_waiver_e_go (test_c_portao.TestVeredito.test_simulado_vence_waiver_e_go) ... FAIL
+test_tudo_pass_e_go (test_c_portao.TestVeredito.test_tudo_pass_e_go) ... FAIL
+test_veredito_recalcula_e_ignora_o_go_gravado_no_relatorio (test_c_portao.TestVeredito.test_veredito_recalcula_e_ignora_o_go_gravado_no_relatorio) ... FAIL
+test_waiver_em_item_com_waiver_e_go_com_waiver (test_c_portao.TestVeredito.test_waiver_em_item_com_waiver_e_go_com_waiver) ... FAIL
+
+FAILED (failures=99)
+
+## held-out — python3 campanhas/onda1/oraculo/heldout/run_heldout.py -v
+test_ev_payload_json_invalido_sai_2 (test_heldout_a.HeldoutCadeia.test_ev_payload_json_invalido_sai_2) ... FAIL
+test_guarda_falsa_nao_toca_cache_nem_retomar_md (test_heldout_a.HeldoutCadeia.test_guarda_falsa_nao_toca_cache_nem_retomar_md) ... FAIL
+test_retomar_com_cadeia_reencadeada_mas_payload_hash_velho_sai_1 (test_heldout_a.HeldoutCadeia.test_retomar_com_cadeia_reencadeada_mas_payload_hash_velho_sai_1) ... FAIL
+test_retomar_com_linha_do_meio_removida_sai_1 (test_heldout_a.HeldoutCadeia.test_retomar_com_linha_do_meio_removida_sai_1) ... FAIL
+test_retomar_com_seq_com_lacuna_sai_1 (test_heldout_a.HeldoutCadeia.test_retomar_com_seq_com_lacuna_sai_1) ... FAIL
+test_status_sem_cache_refaz_do_ledger (test_heldout_a.HeldoutCadeia.test_status_sem_cache_refaz_do_ledger) ... FAIL
+test_I4_campanha_reintegrar_sem_incrementa (test_heldout_a.HeldoutMaquina.test_I4_campanha_reintegrar_sem_incrementa) ... FAIL
+test_I6_guarda_humana_com_ator_orquestrador (test_heldout_a.HeldoutMaquina.test_I6_guarda_humana_com_ator_orquestrador) ... FAIL
+test_I6_transicao_de_script_saindo_de_aguardando_humano (test_heldout_a.HeldoutMaquina.test_I6_transicao_de_script_saindo_de_aguardando_humano) ... FAIL
+test_I7_estavel_saindo_sem_motivo_no_nivel_task (test_heldout_a.HeldoutMaquina.test_I7_estavel_saindo_sem_motivo_no_nivel_task) ... FAIL
+test_S2_ator_desconhecido (test_heldout_a.HeldoutMaquina.test_S2_ator_desconhecido) ... FAIL
+test_S3_terminal_com_saida (test_heldout_a.HeldoutMaquina.test_S3_terminal_com_saida) ... FAIL
+test_nivel_obra_isolado_nao_acusa_defeito_plantado_so_na_task (test_heldout_a.HeldoutMaquina.test_nivel_obra_isolado_nao_acusa_defeito_plantado_so_na_task) ... FAIL
+test_queda_entre_despachada_e_task_despachar_fecha_vaga_e_task_segue_pronta (test_heldout_a.HeldoutWriteAhead.test_queda_entre_despachada_e_task_despachar_fecha_vaga_e_task_segue_pronta) ... FAIL
+test_task_perdida_com_tentativas_no_teto_vai_para_rejeitada (test_heldout_a.HeldoutWriteAhead.test_task_perdida_com_tentativas_no_teto_vai_para_rejeitada) ... FAIL
+test_bypass_de_aprovacao (test_heldout_b.HeldoutHookAprovacao.test_bypass_de_aprovacao) ... FAIL
+test_falsos_positivos_que_o_hook_nao_pode_cometer (test_heldout_b.HeldoutHookAprovacao.test_falsos_positivos_que_o_hook_nao_pode_cometer) ... FAIL
+test_escrita_em_protegidos_por_outras_rotas (test_heldout_b.HeldoutHookProtegidos.test_escrita_em_protegidos_por_outras_rotas) ... FAIL
+test_leitura_do_heldout_por_rotas_indiretas (test_heldout_b.HeldoutHookProtegidos.test_leitura_do_heldout_por_rotas_indiretas) ... FAIL
+test_g0_reprova_se_contagem_congelada_maior_que_a_atual (test_heldout_c.HeldoutG0G1.test_g0_reprova_se_contagem_congelada_maior_que_a_atual) ... FAIL
+test_g0_sem_campanha_mae_falha_fechado (test_heldout_c.HeldoutG0G1.test_g0_sem_campanha_mae_falha_fechado) ... FAIL
+test_g1_cli_sem_suites_declaradas_falha_fechado (test_heldout_c.HeldoutG0G1.test_g1_cli_sem_suites_declaradas_falha_fechado) ... FAIL
+test_g1_unittest_sem_nenhum_teste_coletado (test_heldout_c.HeldoutG0G1.test_g1_unittest_sem_nenhum_teste_coletado) ... FAIL
+test_arquivo_novo_fora_do_territorio_nao_commitado (test_heldout_c.HeldoutG3.test_arquivo_novo_fora_do_territorio_nao_commitado) ... FAIL
+test_mudanca_de_modo_fora_do_territorio (test_heldout_c.HeldoutG3.test_mudanca_de_modo_fora_do_territorio) ... FAIL
+test_mudanca_nao_commitada_fora_do_territorio (test_heldout_c.HeldoutG3.test_mudanca_nao_commitada_fora_do_territorio) ... FAIL
+test_mudanca_staged_fora_do_territorio (test_heldout_c.HeldoutG3.test_mudanca_staged_fora_do_territorio) ... FAIL
+test_conftest_novo (test_heldout_c.HeldoutG4.test_conftest_novo) ... FAIL
+test_eq_novo (test_heldout_c.HeldoutG4.test_eq_novo) ... FAIL
+test_except_pass_nu (test_heldout_c.HeldoutG4.test_except_pass_nu) ... FAIL
+test_os_exit (test_heldout_c.HeldoutG4.test_os_exit) ... FAIL
+test_pytest_xfail (test_heldout_c.HeldoutG4.test_pytest_xfail) ... FAIL
+test_remover_skip_existente_nao_e_gaming (test_heldout_c.HeldoutG4.test_remover_skip_existente_nao_e_gaming) ... FAIL
+test_unittest_skip (test_heldout_c.HeldoutG4.test_unittest_skip) ... FAIL
+test_aprovacao_com_linha_de_audit_correspondente_e_go (test_heldout_c.HeldoutVeredito.test_aprovacao_com_linha_de_audit_correspondente_e_go) ... FAIL
+test_erro_e_no_go (test_heldout_c.HeldoutVeredito.test_erro_e_no_go) ... FAIL
+test_item_sem_waiver_ausente_do_relatorio_e_no_go (test_heldout_c.HeldoutVeredito.test_item_sem_waiver_ausente_do_relatorio_e_no_go) ... FAIL
+test_na_em_item_que_aplica_e_no_go (test_heldout_c.HeldoutVeredito.test_na_em_item_que_aplica_e_no_go) ... FAIL
+test_waived_sem_arquivo_de_aprovacao_e_no_go (test_heldout_c.HeldoutVeredito.test_waived_sem_arquivo_de_aprovacao_e_no_go) ... FAIL
+[heldout] rodados=39 falhas=39 erros=0 pulados=0 ok=False (0.0s)
+exit=1
+
+## motivos de falha (visíveis + held-out)
+ 117 AssertionError: False is not true : script ausente: ~/.claude/skills/construcao-orquestrada/scripts/co.py
+  21 AssertionError: False is not true : script ausente: ~/.claude/skills/construcao-orquestrada/scripts/co_hook.py
+## passaram: 0

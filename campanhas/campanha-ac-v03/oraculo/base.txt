@@ -1,0 +1,31 @@
+# base do oráculo v0.3 contra ac.py atual — 2026-10-04T15:26:43Z
+# comando: python3 -m unittest test_v03_oraculo -v  (Python 3.13.3)
+test_base_run_alone_does_not_close_remedicao (test_v03_oraculo.AC01RemedicaoPosCorrecaoTest.test_base_run_alone_does_not_close_remedicao) ... FAIL
+test_post_correction_run_without_decision_does_not_close (test_v03_oraculo.AC01RemedicaoPosCorrecaoTest.test_post_correction_run_without_decision_does_not_close) ... FAIL
+test_all_done_shows_concluida (test_v03_oraculo.AC02StatusEtapaTest.test_all_done_shows_concluida) ... FAIL
+test_done_advances_stage_and_failed_done_does_not (test_v03_oraculo.AC02StatusEtapaTest.test_done_advances_stage_and_failed_done_does_not) ... FAIL
+test_done_skips_already_completed_stages (test_v03_oraculo.AC02StatusEtapaTest.test_done_skips_already_completed_stages) ... FAIL
+test_mismatched_total_refused_citing_L02 (test_v03_oraculo.AC03TotalQualidadeTest.test_mismatched_total_refused_citing_L02) ... FAIL
+test_oracle_change_after_base_allows_new_total (test_v03_oraculo.AC03TotalQualidadeTest.test_oracle_change_after_base_allows_new_total) ... FAIL
+test_oracle_change_before_base_does_not_excuse (test_v03_oraculo.AC03TotalQualidadeTest.test_oracle_change_before_base_does_not_excuse) ... FAIL
+test_challenge_varies_between_calls (test_v03_oraculo.AC04aCanalHumanoTest.test_challenge_varies_between_calls) ... FAIL
+test_env_vars_do_not_bypass_tty (test_v03_oraculo.AC04aCanalHumanoTest.test_env_vars_do_not_bypass_tty) ... FAIL
+test_gate_in_tty_with_retyped_challenge (test_v03_oraculo.AC04aCanalHumanoTest.test_gate_in_tty_with_retyped_challenge) ... FAIL
+test_gate_in_tty_wrong_challenge_refused (test_v03_oraculo.AC04aCanalHumanoTest.test_gate_in_tty_wrong_challenge_refused) ... FAIL
+test_gate_refused_without_tty (test_v03_oraculo.AC04aCanalHumanoTest.test_gate_refused_without_tty) ... FAIL
+test_preauth_in_tty_with_retyped_challenge (test_v03_oraculo.AC04aCanalHumanoTest.test_preauth_in_tty_with_retyped_challenge) ... FAIL
+test_preauth_refused_without_tty (test_v03_oraculo.AC04aCanalHumanoTest.test_preauth_refused_without_tty) ... FAIL
+test_simulated_gate_without_tty_never_satisfies_a_gate (test_v03_oraculo.AC04aCanalHumanoTest.test_simulated_gate_without_tty_never_satisfies_a_gate) ... FAIL
+test_allows_non_bash_tools (test_v03_oraculo.AC04bHookTest.test_allows_non_bash_tools) ... FAIL
+test_allows_unrelated_and_read_only_ac_commands (test_v03_oraculo.AC04bHookTest.test_allows_unrelated_and_read_only_ac_commands) ... FAIL
+test_denies_approval_commands_and_variants (test_v03_oraculo.AC04bHookTest.test_denies_approval_commands_and_variants) ... FAIL
+test_selftest_exits_zero (test_v03_oraculo.AC04cHookSelftestTest.test_selftest_exits_zero) ... FAIL
+test_audit_log_inside_work_dir_refused (test_v03_oraculo.AC04dAuditoriaTest.test_audit_log_inside_work_dir_refused) ... FAIL
+test_each_approval_appends_audit_line_outside_work (test_v03_oraculo.AC04dAuditoriaTest.test_each_approval_appends_audit_line_outside_work) ... FAIL
+test_licao_L17_registered (test_v03_oraculo.L17CampanhasSobrepostasTest.test_licao_L17_registered) ... FAIL
+test_overlap_colliding_scopes_exit_1 (test_v03_oraculo.L17CampanhasSobrepostasTest.test_overlap_colliding_scopes_exit_1) ... FAIL
+test_overlap_disjoint_scopes_ok (test_v03_oraculo.L17CampanhasSobrepostasTest.test_overlap_disjoint_scopes_ok) ... FAIL
+test_same_globs_on_different_targets_do_not_collide (test_v03_oraculo.L17CampanhasSobrepostasTest.test_same_globs_on_different_targets_do_not_collide) ... FAIL
+test_scope_over_other_campaign_oracle_collides (test_v03_oraculo.L17CampanhasSobrepostasTest.test_scope_over_other_campaign_oracle_collides) ... FAIL
+Ran 27 tests in 10.203s
+FAILED (failures=27)

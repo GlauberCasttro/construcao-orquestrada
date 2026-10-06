@@ -1,0 +1,101 @@
+// ondas.json5 — bootstrap da própria construcao-orquestrada (DESENHO-v2 §8 + DECISOES-FOUNDER).
+// Globs de `writes` relativos a ~/.claude/skills/ (onde a skill se instala); os que começam por `campanhas/` são
+// relativos à raiz do projeto da skill (antes: workspace ao lado da skill). WS = campanhas/construcao.
+// Nomes da OBRA (frente = task, `writes`); ao rodar em ac.py, transcrever por contrato.json5#mapeamento_plano_ac
+// (`frentes[].nome`/`escreve`) — D11.
+// Regras: frentes da MESMA onda têm writes disjuntos (ac.py globs_overlap, conservador) — inclusive o agente-oráculo
+// da onda N+1 e o mutante, que vivem durante a onda N; o autor do oráculo de X nunca constrói X; nenhum construtor
+// escreve em tests/** nem no oráculo; pico de vivos ≤ 5 (founder 3), recuo para 3 após 429 (frentes passam a lotes).
+// Até co.py existir, o método roda em ac.py --work WS (modo requisito) + orquestrar-subagentes (verificador cego,
+// synthesize.py). A partir da onda 2 o ledger de co_estado registra as próprias ondas.
+{
+  schema_version: 1,
+  raiz_globs: "~/.claude/skills/",
+  teto_vivos: 5,
+  teto_recuo: 3,
+  agentes_oraculo: {
+    "O-ac": "oráculo da campanha ac.py v0.3",
+    O1: "testes da onda 1", O2: "testes da onda 2 (escreve durante a onda 1)", O3: "testes da onda 3 (escreve durante a onda 2)",
+    M: "mutantes semânticos de G5 (≠ construtor, ≠ autor do oráculo)",
+    V: "verificador cego (orquestrar-subagentes; sem Write no produto)",
+  },
+  ondas: [
+    {
+      id: 0, nome: "referências + pré-requisitos", serial: true,
+      frentes: [
+        {id: "0-ref", construtor: "orquestrador", oraculo_por: "orquestrador (checador descartável; sem produto)",
+         writes: ["construcao-orquestrada/references/contrato.json5", "construcao-orquestrada/references/maquina.json5",
+                  "construcao-orquestrada/references/portoes.json5", "construcao-orquestrada/references/invariantes.json5",
+                  "construcao-orquestrada/references/ondas.json5"]},
+        {id: "0-formatos", construtor: "orquestrador", oraculo_por: "O1 (testes de schema)",
+         writes: ["construcao-orquestrada/references/formatos.json5"], nota: "fechado: D1–D13 em contrato.json5#resolucoes"},
+        {id: "0-ac-v03", construtor: "campanha ac.py v0.3 (frentes próprias)", oraculo_por: "O-ac",
+         writes: ["auto-correcao/scripts/ac.py", "auto-correcao/references/licoes.json5", "auto-correcao/references/ciclo.json5"],
+         oraculo_writes: ["campanhas/campanha-ac-v03/oraculo/**"],
+         nota: "PRÉ-REQUISITO obrigatório da onda 1 (founder 2): AC-01..04 + L17"},
+        {id: "0-O1", construtor: "O1", papel: "agente-oráculo", oraculo_de: [1],
+         writes: ["construcao-orquestrada/tests/onda1/**", "campanhas/construcao/oraculo/heldout/onda1/**"]},
+      ],
+      fecha_quando: ["ac.py v0.3 integrada (AC-01..04 verdes)", "hook global instalado (founder 1)",
+                     "oracle:requisito da onda 1 aprovado no terminal", "oráculo da onda 1 vermelho (anti-vácuo)",
+                     "maquina check do protótipo do O1 passa em maquina.json5"],
+    },
+    {
+      id: 1, nome: "núcleo: estado, hook, portão", pico_vivos: 5,
+      frentes: [
+        {id: "A", construtor: "builder-A", oraculo_por: "O1",
+         entrega: "co_estado.py (ev, ledger, fold, maquina check, retomar, RETOMAR.md) + co.py dispatcher (todos os subcomandos; pendentes ⇒ 2)",
+         writes: ["construcao-orquestrada/scripts/co_estado.py", "construcao-orquestrada/scripts/co.py"]},
+        {id: "B", construtor: "builder-B", oraculo_por: "O1",
+         entrega: "co_hook.py (hook, aprovar, desafio, audit, selftest estático/vivo) + trecho de settings",
+         writes: ["construcao-orquestrada/scripts/co_hook.py", "construcao-orquestrada/references/hook-settings.json5"]},
+        {id: "C", construtor: "builder-C", oraculo_por: "O1",
+         entrega: "co_portao.py núcleo (G0, G1, G3, G4, G7, veredito chamando synthesize.py, diff)",
+         writes: ["construcao-orquestrada/scripts/co_portao.py"]},
+        {id: "O2", construtor: "O2", papel: "agente-oráculo", oraculo_de: [2],
+         writes: ["construcao-orquestrada/tests/onda2/**", "campanhas/construcao/oraculo/heldout/onda2/**"]},
+        {id: "V1", construtor: "V", papel: "verificador cego",
+         writes: ["campanhas/construcao/verificacao/onda1/**"]},
+      ],
+      fecha_quando: ["G0/G1/G3/G4 verdes", "hook selftest 100%", "V confirma aprovação bloqueada para subagente e principal"],
+    },
+    {
+      id: 2, nome: "medição, lote, docs", pico_vivos: 5,
+      frentes: [
+        {id: "D", construtor: "builder-D", oraculo_por: "O2",
+         entrega: "co_medir.py (cópia limpa, k, pass^k, comparar IC95, oraculo vacuo/forca)",
+         writes: ["construcao-orquestrada/scripts/co_medir.py"]},
+        {id: "E", construtor: "builder-E", oraculo_por: "O2",
+         entrega: "co.py plano/lote/colisao/trava/reabrir (DAG, write-ahead, teto 5 com recuo 3)",
+         writes: ["construcao-orquestrada/scripts/co.py"]},
+        {id: "F", construtor: "builder-F", oraculo_por: "O2",
+         entrega: "SKILL.md + references/*.md (só explica; cita só nomes do contrato)",
+         writes: ["construcao-orquestrada/SKILL.md", "construcao-orquestrada/references/*.md"]},
+        {id: "O3", construtor: "O3", papel: "agente-oráculo", oraculo_de: [3],
+         writes: ["construcao-orquestrada/tests/onda3/**", "campanhas/construcao/oraculo/heldout/onda3/**"]},
+        {id: "M2", construtor: "M", papel: "mutantes semânticos G5",
+         writes: ["campanhas/construcao/mutantes/onda2/**"]},
+      ],
+      fecha_quando: ["G5 com mutantes de M", "G12 docs↔CLI", "G2 em 3.9 e 3.13"],
+      nota: "E depende de A (ledger); por isso está na onda 2. M e V rodam após o retorno dos construtores (pico 5).",
+    },
+    {
+      id: 3, nome: "integração final (a skill é alvo harness-maquina de si mesma)", serial: true,
+      frentes: [
+        {id: "INT", construtor: "builder-INT", oraculo_por: "O3",
+         entrega: "integração + G6/G8/G9/G10 do próprio co.py",
+         writes: ["construcao-orquestrada/scripts/**", "construcao-orquestrada/SKILL.md", "construcao-orquestrada/references/superficie.json"]},
+        {id: "V3", construtor: "V", papel: "verificador cego",
+         writes: ["campanhas/construcao/verificacao/onda3/**"]},
+      ],
+      fecha_quando: ["portão completo GO sem waiver nos [S]", "maquina check da máquina do processo", "pass^3 no aceite final (founder 4)"],
+    },
+  ],
+  prova: {
+    obra_1: {alvo: "eval 2 jsonl-diff", tipo: "cli", heldout_por: "agente ≠ construtor (evals-propostos.json)",
+             workspace: "campanhas/obras/jsonl-diff/",
+             fecha_quando: ["ENTREGUE com 0 contornos manuais", "RETOMAR.md retomado numa janela nova ≥1 vez",
+                            "0 aprovações fora do terminal no audit", "pass^3 no aceite final"]},
+    depois: ["eval 1 changelog-pt (baseline skill-creator, pass^3)", "eval 3 loja-api só após conferir que o repo existe"],
+  },
+}

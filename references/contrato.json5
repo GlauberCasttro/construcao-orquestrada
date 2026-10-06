@@ -1,0 +1,277 @@
+// contrato.json5 — CONTRATO DE NOMES CONGELADO da construcao-orquestrada (onda 0). Toda frente paralela
+// usa exatamente estes nomes; mudar qualquer um exige `oraculo mudar` (portão humano) e re-plano.
+// Fonte da verdade: campanhas/DESENHO-v2.md, SOBREPOSTO por DECISOES-FOUNDER.md.
+//
+// AJUSTES AO DESENHO-v2 (decisões do founder + coerência checável), em ordem:
+//  A1 (founder 3) teto global 3 → 5 subagentes vivos; ao primeiro 429/limite_uso com causa rate_limit o teto
+//     recua para 3 pelo RESTO DA OBRA (evento `teto_recuado`, sem volta automática). ≤2 campanhas ativas mantido.
+//  A2 (founder 3) rodadas sem pergunta intermediária: removida a transição janela_50 → AGUARDANDO_HUMANO(continuar)
+//     e a regra "1 rodada por janela". O antigo janela_50 vira o evento operacional `checkpoint_janela_50` (ledger +
+//     RETOMAR.md, estado inalterado) — nome único em todos os arquivos (D2).
+//     FECHAR_RODADA decide por script num evento único `rodada_fechada` com 3 saídas mutuamente exclusivas.
+//     Humano só é perguntado nos portões: stop, oraculo, plano, entrega, escalar, abandonar, continuar, oraculo_mudar.
+//  A3 (founder 4) pass^3 obrigatório no aceite final: G13 waiver:false; a guarda de `entrega_aprovada` exige
+//     `pass3_final`. k=1 nas rodadas intermediárias é rotulado "indício", nunca "melhora".
+//  A4 (founder 1) hook global obrigatório (não condicional): cobre co.py aprovar/oraculo mudar e ac.py
+//     gate/preauth/oracle change. A guarda `hook_vivo` de INICIO exige selftest estático + vivo.
+//  A5 (founder 2) campanha ac.py v0.3 (AC-01..04 + L17) é PRÉ-REQUISITO da onda 1 (não mais "se aprovado").
+//  A6 onda 0 = só referências: o stub argparse do co.py sai da onda 0 e vai para a frente A da onda 1
+//     (dispatcher gerado da tabela `subcomandos` abaixo). `formatos.json5` (schemas de todos os arquivos) FECHADO
+//     no fechamento da onda 0, antes do O1 escrever testes; divergências D1–D13 em `resolucoes` (fim deste arquivo).
+//  A7 renomes: references/portao.json5 → portoes.json5; tipos `repo` → `feature-repo`, `harness` → `harness-maquina`;
+//     tipo `agente` aceito e usa a coluna `skill` dos portões (baseline obrigatório).
+//  A8 AGUARDANDO_HUMANO e PAUSADO modelados com atributos `portao` e `retorno` explícitos (BFS sensível a caminho).
+//     Rejeição do oráculo volta a ORACULO (não REPLANEJAR: ainda não há plano). `oraculo_mudar` modelado como
+//     transição (PLANO..REPLANEJAR → AH[oraculo_mudar]). Todo portão humano tem aprovado/rejeitado/abandonar
+//     (continuar rejeitado → PAUSADO).
+//  A9 contadores novos: `despachos` (teto 3 × n_tasks; fecha o ciclo LOTE↔DESPACHADO), `reaberturas` (task, teto 2),
+//     `reintegracoes` (campanha, teto 2). CORRIGIR ganhou saída para REPLANEJAR com tentativas ≥ 3 (o caminho
+//     INTEGRAR→violou→CORRIGIR não passava pela checagem de tentativas de VERIFICAR).
+//  A10 invariante 4 restrito a ciclos SEM transição humana (ciclos com humano são limitados pelo humano).
+//  A11 o teto de pausas (6) é checado na SAÍDA de PAUSADO (`pausas_esgotadas` → AH[continuar]), não na entrada.
+//  A12 handlers plano/lote/colisao/trava ficam no próprio co.py (frente E), mantendo 4 módulos.
+//  A13 matcher do hook inclui Read|Grep|Glob (o item (c) do §4 — leitura do held-out por construtor — exigia).
+//  A14 exceção de código de saída: co_hook segue o protocolo PreToolUse (0 permite, 2 bloqueia; erro interno = 2).
+{
+  schema_version: 1,
+  skill: "construcao-orquestrada",
+  raiz_skill: "~/.claude/skills/construcao-orquestrada",
+  python: {minimo: "3.9", atual: "3.13", so_stdlib: true},
+
+  codigos_saida: {
+    "0": "passa / GO / transição aplicada",
+    "1": "reprova / NO-GO / guarda falsa (ledger inalterado byte a byte)",
+    "2": "entrada inválida, ferramenta ausente ou subcomando pendente (falha fechado)",
+    excecao_hook: "co_hook: 0 = permite; 2 = bloqueia (protocolo PreToolUse), inclusive erro interno (fail-closed)",
+  },
+
+  tipos_alvo: ["skill", "agente", "cli", "feature-repo", "harness-maquina"],
+  tipo_coluna_portao: {skill: "skill", agente: "skill", cli: "cli", "feature-repo": "feature-repo", "harness-maquina": "harness-maquina"},
+  tipos_exigem_baseline: ["skill", "agente"],
+
+  paralelismo: {
+    teto_padrao: 5,                 // founder 3
+    teto_recuo: 3,                  // após 429
+    recuo_gatilho: "evento limite_uso com payload.causa = 'rate_limit' (429)",
+    recuo_dura: "resto da obra",
+    contagem: "DESPACHADA sem RETORNOU no ledger (construtores + agente-oráculo + verificador cego + mutante + campanhas)",
+    max_campanhas_ativas: 2,
+    integracao: "serial, trava integracao.lock, ordem por id",
+  },
+  janela: {horas: 5, checkpoint_em_horas: 2.5, checkpoint_pergunta: false},
+  load_max_chars: 6000,
+
+  // ---------------------------------------------------------------- arquivos em disco
+  // <ws> = workspace da obra (sempre FORA do alvo). Só co.py grava em .construcao/ (em série, tmp + rename).
+  arquivos: {
+    ledger: "<ws>/.construcao/ledger.jsonl",            // append-only, encadeado por hash
+    estado_cache: "<ws>/.construcao/state.json",         // cache do fold; divergiu, o ledger vence
+    trava_integracao: "<ws>/.construcao/integracao.lock",
+    obra: "<ws>/obra.json5",
+    pontos: "<ws>/pontos.json5",
+    plano: "<ws>/PLANO.json5",
+    regressao: "<ws>/regressao.json5",                   // gerado de references/portoes.json5 filtrado por tipo
+    gate_report: "<ws>/gate-report.json",
+    baseline: "<ws>/baseline.json",
+    retomar_md: "<ws>/RETOMAR.md",                       // gerado pelo script a cada ev; o LLM só lê
+    aprovar_sh: "<ws>/aprovacoes/aprovar-<portao>.sh",   // gerado; nunca executado pelo agente
+    aprovacao: "<ws>/aprovacoes/<portao>-<seq>.json",    // usuário SO, ttyname, ts, hash_estado, decisao
+    oraculo_dev: "<ws>/oraculo/dev/**",                  // visível ao construtor
+    oraculo_heldout: "<ws>/oraculo/heldout/**",          // bloqueado a construtor; injetado só na cópia limpa
+    oraculo_manifest: "<ws>/oraculo/MANIFEST.json5",     // autor(es) do oráculo por frente (agent_type)
+    campanha: "<ws>/campanhas/<nome>/",                  // ac.py --work
+    campanha_mae: "<ws>/campanhas/construcao/",
+    runs: "<ws>/rodadas/<N>/runs/<id>/",                 // registro run.json + stdout/stderr por item (D12)
+    comparacao: "<ws>/rodadas/<N>/comparacao.json",
+    mutantes: "<ws>/rodadas/<N>/mutantes/",
+    relatorio_frente: "<ws>/rodadas/<N>/relatorios/<task>-<tentativa>.json", // `lote retornar --relatorio` (D4)
+    audit: "~/.claude/construcao-orquestrada/audit.jsonl", // fora do workspace; escrito só por co_hook (hook + aprovar)
+    settings_hook: "~/.claude/settings.json#hooks.PreToolUse",
+  },
+  protegidos: ["<ws>/.construcao/**", "<ws>/aprovacoes/**", "<ws>/oraculo/**", "~/.claude/construcao-orquestrada/**"],
+
+  // ---------------------------------------------------------------- CLI: scripts/co.py
+  cli: {
+    prog: "co.py",
+    caminho: "scripts/co.py",
+    flags_globais: [{flag: "--work", obrigatoria: true, help: "workspace da obra (fora do alvo)"}],
+    subcomandos: {
+      init: {flags: ["--alvo PATH", "--tipo {skill,agente,cli,feature-repo,harness-maquina}", "--pedido TEXT",
+                     "--stop TEXT", "--max-rodadas INT=3", "--max-horas FLOAT", "--teto INT=5"],
+             handler: "co_estado.cmd_init", negativo: "workspace dentro do alvo ⇒ 2"},
+      ev: {pos: ["evento"], flags: ["--payload FILE", "--motivo TEXT", "--texto TEXT"],
+           handler: "co_estado.cmd_ev",
+           negativo: "guarda falsa ⇒ 1 e ledger inalterado (byte a byte); evento de transição humana (aprovado|rejeitado|abandonar) via ev ⇒ 2 (só `aprovar` grava; D9)"},
+      status: {flags: ["--json"], handler: "co_estado.cmd_status", negativo: "cache adulterado ≠ fold ⇒ mostra o fold e avisa"},
+      load: {pos: ["estado"], handler: "co_estado.cmd_load", negativo: "pacote > 6000 chars ⇒ 1"},
+      maquina: {acoes: ["check"], flags: ["--machine FILE", "--events FILE", "--nivel {obra,task,campanha,todos}"],
+                handler: "co_estado.cmd_maquina", negativo: "máquina com estado trancado plantado ⇒ 1"},
+      pontos: {acoes: ["check"], handler: "co_estado.cmd_pontos", negativo: "ponto sem cenário ⇒ 1"},
+      oraculo: {acoes: ["vacuo", "forca", "mudar", "manifest"], flags: ["--stub PATH", "--mutantes INT", "--semanticos DIR",
+                "--motivo TEXT", "--evidencia TEXT", "--manifest FILE"],
+                handler: "co_medir.cmd_oraculo (vacuo|forca) / co_estado.cmd_oraculo_mudar (mudar) / co_estado.cmd_oraculo_manifest (manifest)",
+                negativo: "oráculo que passa no stub ⇒ 1; sem asserção de efeito ⇒ 1; mudar sem --evidencia ⇒ 2; manifest fora de ORACULO ou com autor = construtor ⇒ 1 (D5)"},
+      plano: {acoes: ["check"], flags: ["--plano FILE"], handler: "co.cmd_plano", negativo: "duas tasks com glob sobreposto ⇒ 1"},
+      lote: {acoes: ["proximo", "despachar", "retornar"], pos_opcional: ["task"], flags: ["--relatorio FILE", "--chave TEXT"],
+             handler: "co.cmd_lote", negativo: "6ª task viva (4ª após recuo) ⇒ 1; retornar sem despachar ⇒ 2",
+             grava: "despachar: `despachada` (write-ahead) e, se há task, `task.despachar`; retornar: copia --relatorio para relatorio_frente, grava `retornou` e, se há task, `task.retornar` (D3, D4)"},
+      diff: {pos: ["task"], flags: ["--base SHA", "--repo PATH"], handler: "co_portao.cmd_diff",
+             negativo: "sed indireto num arquivo fora do território; pytest.skip novo ⇒ 1"},
+      colisao: {pos: ["a", "b"], handler: "co.cmd_colisao", negativo: "colisão via oráculo de A ⇒ 1"},
+      trava: {pos: ["nome=integracao", "acao={acquire,release}"], flags: ["--dono TEXT"], handler: "co.cmd_trava",
+              negativo: "2º acquire ⇒ 1"},
+      medir: {flags: ["--k INT=3", "--config {sistema,baseline}", "--final", "--simulated"], handler: "co_medir.cmd_medir",
+              negativo: "sistema mudou durante a medição ⇒ 1; run anterior ao último merge ⇒ 1 (AC-01); --final com k<3 ⇒ 2"},
+      comparar: {flags: ["--base CFG", "--com CFG", "--rodada INT"], handler: "co_medir.cmd_comparar",
+                 negativo: "totais de [Q] diferentes sem oraculo mudar ⇒ 1 (AC-03)"},
+      portao: {acoes: ["run", "selftest"], flags: ["--only G<n>[,G<n>]", "--final"], handler: "co_portao.cmd_portao",
+               negativo: "selftest: item que não reprova seu negativo plantado ⇒ 1"},
+      veredito: {flags: ["--json"], handler: "co_portao.cmd_veredito",
+                 saidas: ["GO", "GO (com waiver)", "GO (simulado)", "NO-GO"], negativo: "waiver presente e saída 'GO' puro ⇒ teste falha"},
+      aprovar: {pos: ["portao"], flags: ["--decisao {aprovado,rejeitado,abandonar}", "--nota TEXT"],
+                handler: "co_hook.cmd_aprovar", so_terminal_humano: true,
+                modelo: "ESPEC AC-04 do ac.py v0.3 (gate/preauth): tty + desafio redigitado + linha no audit + hook",
+                grava: "aprovacoes/<portao>-<seq>.json + evento `aprovacao` + transição humana (aprovado|rejeitado|abandonar, ator humano) na mesma chamada; audit tipo aprovacao (D9)",
+                negativo: "stdin ou /dev/tty sem tty ⇒ 2 (nenhuma variável de ambiente dispensa); via tool call ⇒ bloqueado pelo hook; desafio errado ⇒ 1; hash_estado ≠ fold ⇒ 1; audit dentro de <ws> ⇒ 1; nada gravado em toda recusa"},
+      hook: {acoes: ["(stdin)", "selftest"], flags: ["--vivo"], handler: "co_hook.cmd_hook",
+             negativo: "payload de subagente chamando aprovar ⇒ 2 (bloqueio)"},
+      retomar: {handler: "co_estado.cmd_retomar", negativo: "linha do ledger editada ⇒ 1"},
+      reabrir: {pos: ["task"], flags: ["--motivo TEXT"], handler: "co.cmd_reabrir", negativo: "sem --motivo ⇒ 2; hash_entradas igual ⇒ 1"},
+    },
+    pendente: "na onda 1 todo handler ainda não implementado imprime 'pendente: <subcomando>' e sai 2",
+  },
+
+  // ---------------------------------------------------------------- módulos (sem CLI própria)
+  modulos: {
+    co_estado: {caminho: "scripts/co_estado.py",
+      funcoes: ["carregar_maquina(nivel)", "append_evento(ws, evento, ator, payload) -> seq", "fold(ws) -> estado", "hash_estado(fold) -> sha256",
+                "verificar_cadeia(ws) -> bool", "avaliar_guarda(nome, ctx) -> bool", "transicionar(ws, evento, payload)",
+                "checar_maquina(maquina) -> relatorio", "retomar(ws) -> plano_retomada", "gerar_retomar_md(ws)",
+                "cmd_init", "cmd_ev", "cmd_status", "cmd_load", "cmd_maquina", "cmd_pontos", "cmd_retomar", "cmd_oraculo_mudar",
+                "cmd_oraculo_manifest"]},
+    co_portao: {caminho: "scripts/co_portao.py",
+      funcoes: ["gerar_regressao(ws, tipo)", "rodar(ws, only, final) -> gate_report", "selftest() -> bool",
+                "veredito(ws) -> str", "g0_oraculo_intacto", "g1_suites", "g2_runtimes", "g3_territorio", "g4_gaming",
+                "g5_forca_oraculo", "g6_superficie", "g7_checks_provam_efeito", "g8_maquina", "g9_e2e",
+                "g10_instalacao_limpa", "g11_upgrade_legado", "g12_docs_cli", "g13_medicao", "g14_pontos",
+                "cmd_portao", "cmd_veredito", "cmd_diff"]},
+    co_medir: {caminho: "scripts/co_medir.py",
+      funcoes: ["copia_limpa(produto, heldout) -> tmpdir", "executar_k(ws, k, config)", "pass_at_k", "pass_hat_k",
+                "comparar_pareado(base, com) -> {delta, ic95}", "ic95_bootstrap(clusters)", "oraculo_vacuo(stub)",
+                "oraculo_forca(n)", "mutantes_ast(src)", "cmd_medir", "cmd_comparar", "cmd_oraculo"]},
+    co_hook: {caminho: "scripts/co_hook.py",
+      funcoes: ["main(stdin) -> exit", "normalizar_comando(cmd) -> tokens", "classificar(payload) -> (bloqueia, motivo)",
+                "registrar_audit(payload, decisao)", "payloads_selftest()", "cmd_hook", "cmd_aprovar", "desafio_4_palavras()"]},
+    co: {caminho: "scripts/co.py", funcoes: ["build_parser()", "main(argv)", "cmd_plano", "cmd_lote", "cmd_colisao",
+         "cmd_trava", "cmd_reabrir"]},
+  },
+  reuso: {
+    ac_py: {caminho: "~/.claude/skills/auto-correcao/scripts/ac.py", importa: ["json5_loads", "json5_load", "sha_files", "globs_overlap"],
+            como: "importlib.util.spec_from_file_location (nunca copiar)", versao_minima: "0.3 (AC-01..04 + L17)",
+            subcomandos_usados: ["init", "oracle freeze|verify|change", "plan check", "front report", "run record", "round new", "results compare"]},
+    orquestrar_subagentes: {scripts: ["roster.py", "mission.py", "synthesize.py"], como: "subprocess", nota: "ledger.py de lá (tp/fp) NÃO é o ledger daqui"},
+  },
+
+  // ---------------------------------------------------------------- hook global
+  hook: {
+    evento: "PreToolUse",
+    matcher: "Bash|Write|Edit|MultiEdit|NotebookEdit|Read|Grep|Glob",
+    comando: "python3 ~/.claude/skills/construcao-orquestrada/scripts/co_hook.py",
+    tokens_bloqueados: [["co.py", "aprovar"], ["co.py", "oraculo", "mudar"], ["ac.py", "gate"], ["ac.py", "preauth"], ["ac.py", "oracle", "change"]],
+    normalizacao: "python3 -c, bash -c, sh -c, eval, variável, caminho relativo/absoluto, aspas — procura tokens após normalizar",
+    excecao: "nenhuma (D10: `aprovar` não tem --simulated; `medir --simulated` não contém token bloqueado)",
+    escrita_bloqueada: ["<ws>/.construcao/**", "<ws>/aprovacoes/**", "<ws>/oraculo/** (exceto agent_type no MANIFEST)"],
+    leitura_bloqueada_construtor: ["<ws>/oraculo/heldout/**"],
+    subagente_sem_agent_type: "bloqueia (fail-closed)",
+    selftest_vivo_portao: "__selftest__",
+  },
+
+  // ---------------------------------------------------------------- ledger
+  ledger: {
+    campos: ["seq", "ts", "ator", "nivel", "evento", "de", "para", "task", "chave", "payload", "payload_hash", "prev", "hash"],  // payload inline (D1)
+    hash: "sha256(prev + json canônico (sort_keys, separators=(',',':'), ensure_ascii=False) do registro sem 'hash')",
+    genese_prev: "0" ,
+    atores: ["humano", "orquestrador", "script"],  // = maquina.atores; o hook não grava no ledger (D6)
+    niveis: ["obra", "task", "campanha", "operacional"],
+    // eventos de transição = campo `evento` das transições de maquina.json5 (nível obra/task/campanha)
+    eventos_transicao: "ver maquina.json5 (transitions.*.evento)",
+    eventos_operacionais: {
+      genese: "1º registro (init): alvo, tipo, hash do contrato e da máquina",
+      janela_inicio: "1º evento de cada janela de 5 h",
+      checkpoint_janela_50: "2,5 h: regrava RETOMAR.md; NÃO muda estado (founder 3)",
+      nota: "texto narrativo (co.py ev nota --texto)",
+      despachada: "write-ahead ANTES da chamada Agent; ÚNICA fonte da contagem de vivos (todo subagente); seguida de task.despachar se há task (D3)",
+      retornou: "relatório recebido; fecha a vaga; seguido de task.retornar se há task (D3)",
+      colhida: "retomada achou resultado no worktree de task perdida",
+      perdida: "retomada: DESPACHADA sem RETORNOU e sem resultado ⇒ re-despacho com tentativa+1",
+      aprovacao: "registrada por co.py aprovar (usuário SO, ttyname, hash_estado, decisao); seguida da transição humana (D9)",
+      manifest_gravado: "co.py oraculo manifest gravou oraculo/MANIFEST.json5 (D5)",
+      oraculo_congelado: "hash + contagem de testes/asserções",
+      trava_adquirida: "integracao.lock", trava_liberada: "integracao.lock",
+      medicao_registrada: "run ids, k, hash do sistema, seq do último merge, pass@k/pass^k, simulated (D10, D12)",
+      portao_relatorio: "gate-report.json hash + veredito",
+      teto_recuado: "teto 5 → 3 após 429 (A1)",
+      contrato_hash: "gravado em plano_ok",
+      retomada: "co.py retomar: cadeia ok, perdidas, próximo comando",
+    },
+  },
+
+  // ---------------------------------------------------------------- portões humanos e de regressão
+  portoes_humanos: ["stop", "oraculo", "plano", "entrega", "escalar", "abandonar", "continuar", "oraculo_mudar"],
+  decisoes_humanas: ["aprovado", "rejeitado", "abandonar"],
+  portoes_regressao: ["G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9", "G10", "G11", "G12", "G13", "G14"],
+  sem_waiver: ["G0", "G1", "G3", "G4", "G5", "G7", "G13"],  // G8 também, para harness-maquina
+
+  // ---------------------------------------------------------------- referências
+  referencias: {
+    "contrato.json5": "este arquivo", "maquina.json5": "máquina única (obra, task, campanha)",
+    "portoes.json5": "G0..G14 por tipo", "invariantes.json5": "7 invariantes checáveis", "ondas.json5": "bootstrap",
+    "formatos.json5": "esquema de cada arquivo (bijeção com `arquivos`), payloads do ledger e convenções — fechado (D13)",
+  },
+
+  // ---------------------------------------------------------------- PLANO da obra × PLANO do ac.py (D11)
+  // A obra usa nomes próprios (`tasks`, `writes`; CLI `lote/diff <task>`; ondas.json5 segue a obra). A campanha é do
+  // ac.py v0.3 e usa os nomes DELE. co.py transcreve ao abrir campanha (CORRIGIR → campanhas_abertas); nunca o inverso.
+  mapeamento_plano_ac: {
+    "tasks": "frentes",
+    "tasks[].id": "frentes[].nome",
+    "tasks[].writes": "frentes[].escreve",
+    "tasks[].criterio": "frentes[].criterio",
+    "tasks[].cenarios": "frentes[].defeitos (ids D-<r>-<nn> do DEFEITOS.json5 da campanha que originaram a task)",
+    "tasks[].reads|deps|construtor|isolation|sozinha|pontos": "sem equivalente: ficam só na obra",
+    "decisoes[] {id, texto, opcoes, recomendacao}": "decisoes[] {id, produto: true, texto} (portão ac.py gate plan:<id>, só terminal)",
+    "contrato": "contrato",
+    "parada": "parada",
+    aprovacao: "co.py aprovar ⇔ ac.py gate|preauth: mesmo modelo AC-04 (tty + desafio + audit + hook); audits separados",
+  },
+
+  // ---------------------------------------------------------------- resoluções do fechamento da onda 0
+  resolucoes: [
+    {id: "D1", escolha: "`payload` inline em cada registro do ledger (campo novo entre `chave` e `payload_hash`); payload_hash = sha256_de_objeto(payload) mantido e conferido na cadeia",
+     porque: "o fold precisa do conteúdo; um só arquivo, um só escritor e o hash do registro já cobre o payload — sem store endereçado por conteúdo"},
+    {id: "D2", escolha: "nome único `checkpoint_janela_50` (evento operacional); `janela_50` só aparece como histórico no ajuste A2",
+     porque: "ledger.eventos_operacionais e maquina.json5 já usavam esse nome"},
+    {id: "D3", escolha: "os dois pares ficam com papéis distintos: `despachada`/`retornou` = vaga (write-ahead, conta vivos de TODO subagente, base da retomada); `task.despachar`/`task.retornar` = estado da task, gravados logo depois pela MESMA chamada de `lote`",
+     porque: "oráculo, verificador, mutante e campanha ocupam vaga sem ter task; contagem de vivos com uma única fonte. Queda entre os dois registros = o Agent não foi chamado; retomar fecha a vaga com `perdida` e a task segue PRONTA"},
+    {id: "D4", escolha: "arquivo novo `relatorio_frente` = <ws>/rodadas/<N>/relatorios/<task>-<tentativa>.json; `lote retornar --relatorio FILE` valida, copia e grava o hash em `retornou`",
+     porque: "o relatório é evidência auditável da rodada e precisa de caminho estável; fica ao lado de runs/comparacao"},
+    {id: "D5", escolha: "nova ação `co.py oraculo manifest --manifest FILE` (co_estado.cmd_oraculo_manifest): só em ORACULO, valida e grava oraculo/MANIFEST.json5 + evento `manifest_gravado`, ANTES de despachar o agente-oráculo",
+     porque: "MANIFEST está em protegido (só script grava) e o hook precisa dele antes de o agente-oráculo escrever; ação no subcomando existente, sem arquivo intermediário com nome"},
+    {id: "D6", escolha: "`hook` sai de ledger.atores (= maquina.atores: humano, orquestrador, script)",
+     porque: "o hook só escreve audit.jsonl; nenhum evento do ledger tem ator hook"},
+    {id: "D7", escolha: "precedência do veredito: NO-GO > GO (simulado) > GO (com waiver) > GO (portoes.json5#veredito.precedencia)",
+     porque: "o rótulo mais fraco vence; simulado invalida a prova inteira, waiver só um item"},
+    {id: "D8", escolha: "hash_estado = sha256_de_objeto({obra, contadores, constantes, teto_vigente, tasks, campanhas, contrato_hash, oraculo}) do fold (formatos.convencoes.hash_estado)",
+     porque: "exclui campos voláteis (seq, ts, janela, trava, vivos) para nota/checkpoint não invalidarem uma aprovação, mas qualquer mudança decisória invalida"},
+    {id: "D9", escolha: "seq do arquivo = seq do evento `aprovacao`; `co.py aprovar` grava, na mesma chamada e só após tty + desafio + hash_estado ok: arquivo, `aprovacao`, a transição humana (ator humano) e a linha tipo aprovacao do audit (AC-04(d)); `co.py ev aprovado|rejeitado|abandonar` ⇒ 2",
+     porque: "I6: transição humana só por aprovacao_humana e só pela porta humana; se o orquestrador emitisse `ev aprovado` um ator não humano gravaria evento humano"},
+    {id: "D10", escolha: "`aprovar --simulated` e o evento `aprovacao_simulada` saem; a exceção do hook vira nenhuma; 'GO (simulado)' = há medição com `medir --simulated` (payload medicao_registrada.simulated)",
+     porque: "MEDIR não tem portão humano e na ESPEC AC-04 a aprovação simulada nunca satisfaz um portão — não havia o que aprovar"},
+    {id: "D11", escolha: "PLANO da obra mantém `tasks`/`writes` (ondas.json5 idem); PLANO de campanha usa os nomes do ac.py (`frentes`/`escreve`); mapeamento explícito em `mapeamento_plano_ac`",
+     porque: "a CLI da obra já fala em task; a campanha é delegada ao ac.py v0.3, cujos nomes não mudam"},
+    {id: "D12", escolha: "agregado de `medir` no payload de `medicao_registrada` (inline, D1), sem arquivo; registro de cada execução = runs/<id>/run.json",
+     porque: "o agregado é derivável dos run.json e precisa estar no ledger para a guarda; um arquivo a mais seria cache duplicado"},
+    {id: "D13", escolha: "referencias['formatos.json5'] descreve o arquivo; formatos.json5 marcado `status: fechado`; A6 e ondas 0-formatos atualizados",
+     porque: "as divergências acima estão aplicadas"},
+  ],
+}

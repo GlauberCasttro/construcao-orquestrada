@@ -1,0 +1,230 @@
+// maquina.json5 — FONTE ÚNICA das transições da construcao-orquestrada (níveis obra, task, campanha).
+// Lido por co_estado.carregar_maquina / co.py maquina check. Princípio: o LLM decide o conteúdo; o script decide
+// a transição (guarda = predicado nomeado em Python, escrito aqui como expressão booleana sobre átomos,
+// contadores e constantes — avaliável por tabela-verdade); o hook bloqueia; o ledger prova.
+//
+// Semântica das chaves de transição:
+//   evento   nome gravado no ledger (`co.py ev <evento>`); mais de uma transição pode ter o mesmo evento a partir
+//            do mesmo estado desde que as guardas sejam mutuamente exclusivas (invariante 5).
+//   from/to  estados; to = "@retorno" volta ao estado gravado em `retorno` (estados transversais).
+//   set      atributos gravados ao entrar: portao (qual portão humano) e retorno ("@from" = estado de origem).
+//   requer   atributos exigidos na saída (ex.: {portao: "stop"}). BFS do checador roda sobre (estado, portao, retorno).
+//   incrementa / zera   contadores (teto em `contadores`); todo ciclo sem transição humana passa por um `incrementa`.
+//   actor    humano | orquestrador | script. `humano` SÓ sai de AGUARDANDO_HUMANO e SÓ com guarda aprovacao_humana;
+//            transição humana é gravada SÓ por `co.py aprovar` (junto do evento `aprovacao`); `co.py ev` a recusa (D9).
+//   Eventos operacionais (contrato.ledger.eventos_operacionais) não são transições; `despachada`/`retornou` contam
+//   vagas e precedem task.despachar/task.retornar na mesma chamada de `lote` (D3).
+//   motivo_obrigatorio   saída de estado estável/aceito (invariante 7).
+{
+  schema_version: 1,
+  atores: ["humano", "orquestrador", "script"],
+  constantes: {MAX_TENTATIVAS: 3, MAX_RODADAS: 3, MAX_REPLANEJAMENTOS: 2, MAX_PAUSAS: 6, MAX_REABERTURAS: 2,
+               MAX_REINTEGRACOES: 2, MAX_DESPACHOS: 30},  // MAX_DESPACHOS = MAX_TENTATIVAS × n_tasks; gravado em plano_ok (30 = valor do checador)
+  contadores: {
+    tentativas: {teto: "MAX_TENTATIVAS", nivel: ["obra", "task"], zera_em: ["continuar_rodada", "novo_plano", "escalar_aprovado"]},
+    rodada: {teto: "MAX_RODADAS", nivel: ["obra"], nota: "escalar_aprovado pode estender MAX_RODADAS por decisão humana registrada"},
+    replanejamentos: {teto: "MAX_REPLANEJAMENTOS", nivel: ["obra"]},
+    pausas: {teto: "MAX_PAUSAS", nivel: ["obra"], zera_em: ["continuar_aprovado"]},
+    despachos: {teto: "MAX_DESPACHOS", nivel: ["obra"], zera_em: ["novo_plano"]},
+    reaberturas: {teto: "MAX_REABERTURAS", nivel: ["task"]},
+    reintegracoes: {teto: "MAX_REINTEGRACOES", nivel: ["campanha"]},
+  },
+  paralelismo: {teto_padrao: 5, teto_recuo: 3, guarda_teto: "vivos < teto_vigente"},
+
+  niveis: {
+    // ============================================================ OBRA
+    obra: {
+      states: ["INICIO", "PREMISSAS", "ORACULO", "BASELINE", "PLANO", "LOTE", "DESPACHADO", "INTEGRAR", "VERIFICAR",
+               "MEDIR", "CORRIGIR", "FECHAR_RODADA", "REPLANEJAR", "AGUARDANDO_HUMANO", "PAUSADO", "ENTREGUE", "ABANDONADO"],
+      initial: "INICIO",
+      terminal: ["ENTREGUE", "ABANDONADO"],
+      sucesso: "ENTREGUE",
+      verificacao_obrigatoria: ["VERIFICAR", "AGUARDANDO_HUMANO"],  // invariante 3: remover qualquer um ⇒ ENTREGUE inalcançável
+      transversais: {
+        AGUARDANDO_HUMANO: {atributos: ["portao", "retorno"], saidas_minimas: ["aprovado", "rejeitado", "abandonar"]},
+        PAUSADO: {atributos: ["retorno"], saidas_minimas: ["retomar"]},
+      },
+      etapas_v1: {E0: "PREMISSAS", E1: "ORACULO+BASELINE", E2: "PLANO", E3: "LOTE+DESPACHADO", E4: "INTEGRAR+VERIFICAR",
+                  E5: "MEDIR", E6: "CORRIGIR", E7: "FECHAR_RODADA"},
+      transitions: {
+        iniciar: {evento: "iniciar", from: ["INICIO"], to: "PREMISSAS", actor: "script",
+                  guard: "hook_vivo and workspace_fora_do_alvo"},
+        premissas_ok: {evento: "premissas_ok", from: ["PREMISSAS"], to: "AGUARDANDO_HUMANO", actor: "orquestrador",
+                       set: {portao: "stop"}, guard: "pontos_completos and stop_numerico"},
+        stop_aprovado: {evento: "aprovado", from: ["AGUARDANDO_HUMANO"], requer: {portao: "stop"}, to: "ORACULO",
+                        actor: "humano", guard: "aprovacao_humana"},
+        stop_rejeitado: {evento: "rejeitado", from: ["AGUARDANDO_HUMANO"], requer: {portao: "stop"}, to: "PREMISSAS",
+                         actor: "humano", guard: "aprovacao_humana"},
+
+        oraculo_pronto: {evento: "oraculo_pronto", from: ["ORACULO"], to: "AGUARDANDO_HUMANO", actor: "orquestrador",
+                         set: {portao: "oraculo"},
+                         guard: "autor_fora_dos_construtores and vermelho_baseline_e_stub and pontos_cobertos and criterios_classificados"},
+        oraculo_aprovado: {evento: "aprovado", from: ["AGUARDANDO_HUMANO"], requer: {portao: "oraculo"}, to: "BASELINE",
+                           actor: "humano", guard: "aprovacao_humana",
+                           efeito: "ac.py oracle freeze; grava hash e contagem de testes/asserções (evento oraculo_congelado)"},
+        oraculo_rejeitado: {evento: "rejeitado", from: ["AGUARDANDO_HUMANO"], requer: {portao: "oraculo"}, to: "ORACULO",
+                            actor: "humano", guard: "aprovacao_humana"},
+
+        baseline_medido: {evento: "medido", from: ["BASELINE"], to: "PLANO", actor: "orquestrador",
+                          guard: "oraculo_congelado and baseline_reprodutivel"},
+        baseline_dispensado: {evento: "dispensado", from: ["BASELINE"], to: "PLANO", actor: "orquestrador",
+                              guard: "oraculo_congelado and not tipo_exige_baseline and motivo_registrado"},
+
+        plano_com_decisoes: {evento: "plano_ok", from: ["PLANO"], to: "AGUARDANDO_HUMANO", actor: "orquestrador",
+                             set: {portao: "plano"}, guard: "plano_valido and ha_decisoes",
+                             efeito: "grava contrato_hash e MAX_DESPACHOS"},
+        plano_sem_decisoes: {evento: "plano_ok", from: ["PLANO"], to: "LOTE", actor: "orquestrador",
+                             guard: "plano_valido and not ha_decisoes", efeito: "grava contrato_hash e MAX_DESPACHOS"},
+        plano_aprovado: {evento: "aprovado", from: ["AGUARDANDO_HUMANO"], requer: {portao: "plano"}, to: "LOTE",
+                         actor: "humano", guard: "aprovacao_humana"},
+        plano_rejeitado: {evento: "rejeitado", from: ["AGUARDANDO_HUMANO"], requer: {portao: "plano"}, to: "REPLANEJAR",
+                          actor: "humano", guard: "aprovacao_humana"},
+
+        lote_ok: {evento: "lote_ok", from: ["LOTE"], to: "DESPACHADO", actor: "orquestrador", incrementa: "despachos",
+                  guard: "lote_cabe_no_teto and lote_disjunto and deps_aceitas and orcamento_restante and despachos < MAX_DESPACHOS"},
+        fronteira_vazia: {evento: "fronteira_vazia", from: ["LOTE"], to: "INTEGRAR", actor: "script",
+                          guard: "todas_tasks_retornadas_ou_aceitas"},
+        todos_retornaram: {evento: "todos_retornaram", from: ["DESPACHADO"], to: "LOTE", actor: "script",
+                           guard: "nenhuma_em_voo"},
+
+        merge_ok: {evento: "merge_ok", from: ["INTEGRAR"], to: "VERIFICAR", actor: "script",
+                   guard: "trava_adquirida and merge_ordenado and oraculo_apos_cada_merge and diff_no_territorio"},
+        violou: {evento: "violou", from: ["INTEGRAR"], to: "CORRIGIR", actor: "script",
+                 guard: "g3_reprovou or g4_reprovou", efeito: "task volta REJEITADA"},
+
+        verde: {evento: "verde", from: ["VERIFICAR"], to: "MEDIR", actor: "script",
+                guard: "portao_regressao_go and verificador_nao_autor"},
+        vermelho_corrigir: {evento: "vermelho", from: ["VERIFICAR"], to: "CORRIGIR", actor: "script",
+                            guard: "tentativas < MAX_TENTATIVAS and not mesma_rejeicao_2x and not oscilacao"},
+        vermelho_replanejar: {evento: "vermelho", from: ["VERIFICAR"], to: "REPLANEJAR", actor: "script",
+                              guard: "tentativas >= MAX_TENTATIVAS or mesma_rejeicao_2x or oscilacao"},
+
+        medido: {evento: "medido", from: ["MEDIR"], to: "FECHAR_RODADA", actor: "script",
+                 guard: "sistema_congelado_na_medicao and copia_limpa and medicao_posterior_ao_merge"},
+
+        campanhas_abertas: {evento: "campanhas_abertas", from: ["CORRIGIR"], to: "LOTE", actor: "orquestrador",
+                            incrementa: "tentativas",
+                            guard: "tentativas < MAX_TENTATIVAS and defeitos_classificados and so_sistema_vira_task and teste_falha_antes"},
+        corrigir_esgotado: {evento: "campanhas_abertas", from: ["CORRIGIR"], to: "REPLANEJAR", actor: "script",
+                            guard: "tentativas >= MAX_TENTATIVAS"},
+
+        // founder 3: decisão de rodada é do script, sem pergunta intermediária; humano só em parar/escalar
+        parar: {evento: "rodada_fechada", from: ["FECHAR_RODADA"], to: "AGUARDANDO_HUMANO", actor: "script",
+                set: {portao: "entrega"}, guard: "criterio_parada_ok and pontos_atualizados and retomar_md_valido"},
+        continuar_rodada: {evento: "rodada_fechada", from: ["FECHAR_RODADA"], to: "CORRIGIR", actor: "script",
+                           incrementa: "rodada",
+                           guard: "not criterio_parada_ok and rodada < MAX_RODADAS and not plato_2 and not orcamento_esgotado"},
+        escalar: {evento: "rodada_fechada", from: ["FECHAR_RODADA"], to: "AGUARDANDO_HUMANO", actor: "script",
+                  set: {portao: "escalar"},
+                  guard: "not criterio_parada_ok and (rodada >= MAX_RODADAS or plato_2 or orcamento_esgotado)"},
+
+        entrega_aprovada: {evento: "aprovado", from: ["AGUARDANDO_HUMANO"], requer: {portao: "entrega"}, to: "ENTREGUE",
+                           actor: "humano", guard: "aprovacao_humana and veredito_go_final and pass3_final"},
+        entrega_rejeitada: {evento: "rejeitado", from: ["AGUARDANDO_HUMANO"], requer: {portao: "entrega"}, to: "REPLANEJAR",
+                            actor: "humano", guard: "aprovacao_humana"},
+        escalar_aprovado: {evento: "aprovado", from: ["AGUARDANDO_HUMANO"], requer: {portao: "escalar"}, to: "CORRIGIR",
+                           actor: "humano", guard: "aprovacao_humana", efeito: "founder estende orçamento/MAX_RODADAS (registrado)"},
+        escalar_rejeitado: {evento: "rejeitado", from: ["AGUARDANDO_HUMANO"], requer: {portao: "escalar"}, to: "REPLANEJAR",
+                            actor: "humano", guard: "aprovacao_humana"},
+
+        novo_plano: {evento: "novo_plano", from: ["REPLANEJAR"], to: "PLANO", actor: "orquestrador",
+                     incrementa: "replanejamentos", guard: "replanejamentos < MAX_REPLANEJAMENTOS",
+                     efeito: "invalida aceites cujo hash_entradas mudou (task.reabrir/descartar)"},
+        desistir: {evento: "desistir", from: ["REPLANEJAR"], to: "AGUARDANDO_HUMANO", actor: "orquestrador",
+                   set: {portao: "abandonar"}, guard: "true"},
+        abandono_confirmado: {evento: "aprovado", from: ["AGUARDANDO_HUMANO"], requer: {portao: "abandonar"}, to: "ABANDONADO",
+                              actor: "humano", guard: "aprovacao_humana"},
+        abandono_rejeitado: {evento: "rejeitado", from: ["AGUARDANDO_HUMANO"], requer: {portao: "abandonar"}, to: "REPLANEJAR",
+                             actor: "humano", guard: "aprovacao_humana"},
+
+        // oráculo só é reentrado por mudança explícita com motivo e evidência (requisito novo = extensão)
+        oraculo_mudar: {evento: "oraculo_mudar", from: ["PLANO", "LOTE", "INTEGRAR", "VERIFICAR", "CORRIGIR", "FECHAR_RODADA", "REPLANEJAR"],
+                        to: "AGUARDANDO_HUMANO", actor: "orquestrador", set: {portao: "oraculo_mudar", retorno: "@from"},
+                        guard: "motivo_registrado and evidencia_registrada", motivo_obrigatorio: true},
+        oraculo_mudar_aprovado: {evento: "aprovado", from: ["AGUARDANDO_HUMANO"], requer: {portao: "oraculo_mudar"}, to: "ORACULO",
+                                 actor: "humano", guard: "aprovacao_humana", efeito: "ac.py oracle change; re-baseline obrigatório"},
+        oraculo_mudar_rejeitado: {evento: "rejeitado", from: ["AGUARDANDO_HUMANO"], requer: {portao: "oraculo_mudar"}, to: "@retorno",
+                                  actor: "humano", guard: "aprovacao_humana"},
+
+        // transversal: limite de uso / 429 (parede, não erro: sem backoff em rajada)
+        limite_uso: {evento: "limite_uso",
+                     from: ["INICIO", "PREMISSAS", "ORACULO", "BASELINE", "PLANO", "LOTE", "DESPACHADO", "INTEGRAR",
+                            "VERIFICAR", "MEDIR", "CORRIGIR", "FECHAR_RODADA", "REPLANEJAR"],
+                     to: "PAUSADO", actor: "script", set: {retorno: "@from"}, incrementa: "pausas", guard: "limite_detectado",
+                     efeito: "grava retomar_apos; nenhum despacho novo; se payload.causa = rate_limit ⇒ teto 5 → 3 (teto_recuado)"},
+        retomar: {evento: "retomar", from: ["PAUSADO"], to: "@retorno", actor: "orquestrador",
+                  guard: "agora_apos_retomar and sem_perdidas_pendentes and pausas < MAX_PAUSAS"},
+        pausas_esgotadas: {evento: "retomar", from: ["PAUSADO"], to: "AGUARDANDO_HUMANO", actor: "script",
+                           set: {portao: "continuar"}, guard: "pausas >= MAX_PAUSAS"},
+        continuar_aprovado: {evento: "aprovado", from: ["AGUARDANDO_HUMANO"], requer: {portao: "continuar"}, to: "@retorno",
+                             actor: "humano", guard: "aprovacao_humana", zera: ["pausas"]},
+        continuar_rejeitado: {evento: "rejeitado", from: ["AGUARDANDO_HUMANO"], requer: {portao: "continuar"}, to: "PAUSADO",
+                              actor: "humano", guard: "aprovacao_humana", nota: "segue pausado; volta a pedir no próximo retomar"},
+
+        // abandonar vale de qualquer portão humano
+        abandonar: {evento: "abandonar", from: ["AGUARDANDO_HUMANO"], to: "ABANDONADO", actor: "humano",
+                    guard: "aprovacao_humana"},
+      },
+      eventos_sem_transicao: {checkpoint_janela_50: "founder 3: grava RETOMAR.md e segue; não pergunta", nota: "narrativa"},
+    },
+
+    // ============================================================ TASK (vive dentro de LOTE/DESPACHADO da obra)
+    task: {
+      states: ["PENDENTE", "PRONTA", "EM_VOO", "RETORNADA", "ACEITA", "REJEITADA", "DESCARTADA"],
+      initial: "PENDENTE",
+      terminal: ["DESCARTADA"],
+      estaveis: ["ACEITA"],           // aceite durável: só sai por reabrir com motivo (invariante 7)
+      sucesso: "ACEITA",
+      verificacao_obrigatoria: ["RETORNADA"],
+      transitions: {
+        pronta: {evento: "task.pronta", from: ["PENDENTE"], to: "PRONTA", actor: "script", guard: "deps_aceitas and brief_valido"},
+        despachar: {evento: "task.despachar", from: ["PRONTA"], to: "EM_VOO", actor: "orquestrador",
+                    guard: "vivos_abaixo_do_teto and writes_disjuntos_dos_vivos",
+                    efeito: "gravada por `lote despachar` logo após o write-ahead `despachada` (D3), ANTES da chamada Agent"},
+        retornar: {evento: "task.retornar", from: ["EM_VOO"], to: "RETORNADA", actor: "orquestrador", guard: "relatorio_presente",
+                   efeito: "gravada por `lote retornar` logo após `retornou` (D3); relatório em relatorio_frente (D4)"},
+        colher: {evento: "task.colher", from: ["EM_VOO"], to: "RETORNADA", actor: "script",
+                 guard: "perdida_na_retomada and resultado_no_worktree"},
+        perdida: {evento: "task.perdida", from: ["EM_VOO"], to: "PRONTA", actor: "script", incrementa: "tentativas",
+                  guard: "perdida_na_retomada and not resultado_no_worktree and tentativas < MAX_TENTATIVAS"},
+        perdida_esgotada: {evento: "task.perdida", from: ["EM_VOO"], to: "REJEITADA", actor: "script",
+                           guard: "perdida_na_retomada and not resultado_no_worktree and tentativas >= MAX_TENTATIVAS"},
+        aceitar: {evento: "task.verificada", from: ["RETORNADA"], to: "ACEITA", actor: "script",
+                  guard: "verificacao_ok"},
+        rejeitar: {evento: "task.verificada", from: ["RETORNADA"], to: "REJEITADA", actor: "script",
+                   guard: "not verificacao_ok"},
+        retentar: {evento: "task.retentar", from: ["REJEITADA"], to: "PRONTA", actor: "orquestrador", incrementa: "tentativas",
+                   guard: "tentativas < MAX_TENTATIVAS and not mesma_rejeicao_2x"},
+        descartar: {evento: "task.descartar", from: ["PENDENTE", "PRONTA", "REJEITADA"], to: "DESCARTADA", actor: "script",
+                    guard: "obra_replanejou", motivo_obrigatorio: true},
+        reabrir: {evento: "task.reabrir", from: ["ACEITA"], to: "PRONTA", actor: "orquestrador", incrementa: "reaberturas",
+                  guard: "hash_entradas_mudou and reaberturas < MAX_REABERTURAS", motivo_obrigatorio: true},
+      },
+      atomos_definidos: {verificacao_ok: "diff_no_territorio and testes_vermelho_verde and verificador_nao_autor"},
+    },
+
+    // ============================================================ CAMPANHA (espelho do status do ac.py; laço = ciclo.json5)
+    campanha: {
+      fonte: "~/.claude/skills/auto-correcao/references/ciclo.json5 (máquina do ac.py, intacta)",
+      states: ["RASCUNHO", "ATIVA", "PRONTA_INTEGRAR", "INTEGRADA", "ABANDONADA"],
+      initial: "RASCUNHO",
+      terminal: ["INTEGRADA", "ABANDONADA"],
+      sucesso: "INTEGRADA",
+      verificacao_obrigatoria: ["PRONTA_INTEGRAR"],
+      transitions: {
+        ativar: {evento: "campanha.ativar", from: ["RASCUNHO"], to: "ATIVA", actor: "script",
+                 guard: "oraculo_campanha_congelado and campanhas_ativas_abaixo_de_2"},
+        pronta: {evento: "campanha.pronta", from: ["ATIVA"], to: "PRONTA_INTEGRAR", actor: "script",
+                 guard: "ac_decisao_parar"},
+        integrar: {evento: "campanha.integrar", from: ["PRONTA_INTEGRAR"], to: "INTEGRADA", actor: "script",
+                   guard: "colisao_vazia and trava_adquirida and oraculos_fechados_verdes"},
+        reintegrar: {evento: "campanha.integrar", from: ["PRONTA_INTEGRAR"], to: "ATIVA", actor: "script",
+                     incrementa: "reintegracoes",
+                     guard: "not (colisao_vazia and trava_adquirida and oraculos_fechados_verdes) and reintegracoes < MAX_REINTEGRACOES",
+                     efeito: "re-mede o base (L17)"},
+        abandonar: {evento: "campanha.abandonar", from: ["RASCUNHO", "ATIVA", "PRONTA_INTEGRAR"], to: "ABANDONADA",
+                    actor: "orquestrador", guard: "motivo_registrado", motivo_obrigatorio: true},
+      },
+    },
+  },
+}

@@ -1,0 +1,61 @@
+// invariantes.json5 — os 7 invariantes da máquina como especificação CHECÁVEL (sem LLM).
+// Executor: co_estado.checar_maquina via `co.py maquina check [--machine f] [--nivel ...]`; roda em INICIO e no G8.
+// Entrada: maquina.json5 (ou a máquina do alvo, mesmo formato). Saída: 0 todos OK, 1 algum viola, 2 JSON inválido.
+//
+// Modelo de grafo comum a todos:
+//   nó = (estado, portao, retorno). Transição t aplica-se ao nó se estado ∈ t.from e t.requer ⊆ atributos.
+//   Destino: t.to ("@retorno" ⇒ valor de `retorno` do nó; inválido se vazio). `set.retorno: "@from"` grava o estado
+//   de origem; `set.portao` grava o portão; atributos não setados são preservados; ao sair de um transversal para
+//   estado comum, portao/retorno são limpos. Guardas NÃO podam o grafo estrutural (exceto inv. 5, que as avalia).
+//   Alvos de vivacidade = terminal ∪ estaveis.
+{
+  schema_version: 1,
+  checagens_estruturais: [
+    {id: "S1", verifica: "todo from/to é estado declarado ou '@retorno'; initial ∈ states; terminal ⊆ states"},
+    {id: "S2", verifica: "actor ∈ atores; todo `incrementa`/`zera` é contador declarado com teto"},
+    {id: "S3", verifica: "terminal não tem transição de saída"},
+    {id: "S4", verifica: "todo identificador de guarda é átomo, contador, constante ou true/false; guarda parseável"},
+  ],
+  invariantes: {
+    I1: {nome: "alcançabilidade",
+         enunciado: "todo estado declarado é alcançável a partir de initial",
+         algoritmo: "BFS sobre nós (estado, portao, retorno) a partir de (initial, -, -); projetar em estado",
+         falha_se: "algum estado de `states` não aparece em nenhum nó alcançado",
+         negativo: "acrescentar estado ORFAO sem transição de entrada ⇒ 1"},
+    I2: {nome: "vivacidade",
+         enunciado: "de todo nó alcançável não terminal há caminho a um terminal (ou estável, no nível task); todo não terminal tem ≥1 saída; AGUARDANDO_HUMANO e PAUSADO nunca terminais e com as `saidas_minimas` (L16)",
+         algoritmo: "BFS reverso a partir dos nós terminais/estáveis no grafo de nós alcançáveis; conferir saidas_minimas por evento",
+         falha_se: "nó alcançável sem caminho a terminal; estado não terminal sem transição de saída; transversal sem aprovado/rejeitado/abandonar (AH) ou retomar (PAUSADO)",
+         negativo: "plantar estado TRANCADO com entrada e sem saída ⇒ 1"},
+    I3: {nome: "sem atalho",
+         enunciado: "para cada estado V em verificacao_obrigatoria: removendo V, `sucesso` fica inalcançável (todo caminho para ENTREGUE passa por VERIFICAR e por AGUARDANDO_HUMANO; todo caminho para ACEITA passa por RETORNADA)",
+         algoritmo: "BFS a partir de initial com nós de estado V excluídos; sucesso não pode aparecer",
+         falha_se: "sucesso alcançável sem passar por V",
+         negativo: "acrescentar transição MEDIR→ENTREGUE ou LOTE→MEDIR→... que pule VERIFICAR ⇒ 1"},
+    I4: {nome: "ciclos limitados",
+         enunciado: "todo ciclo SEM transição de actor humano contém uma transição com `incrementa` de contador com teto (tentativas, rodada, replanejamentos, pausas, despachos, reaberturas, reintegracoes). Ciclos com transição humana são limitados pelo humano (ajuste A10)",
+         algoritmo: "remover do grafo de nós as arestas humanas e as arestas com `incrementa`; o restante deve ser acíclico (DFS com cores / Kahn)",
+         falha_se: "ciclo remanescente; listar os estados do ciclo",
+         negativo: "remover `incrementa: \"despachos\"` de lote_ok ⇒ ciclo LOTE↔DESPACHADO ⇒ 1"},
+    I5: {nome: "determinismo",
+         enunciado: "para cada (estado, evento, requer.portao) com >1 transição, as guardas são mutuamente exclusivas",
+         algoritmo: "tabela-verdade: átomos ∈ {F,V}; contadores ∈ {0..teto+1}; constantes pelo valor; avaliar as guardas com eval restrito (só and/or/not/comparações); nenhuma atribuição pode satisfazer duas",
+         falha_se: "atribuição que satisfaz duas guardas do mesmo (estado, evento, portao); reportar a atribuição",
+         informativo: "exaustividade (alguma guarda sempre verdadeira) é reportada como INFO, não falha — guarda falsa ⇒ exit 1 e ledger inalterado",
+         negativo: "trocar `tentativas >= MAX_TENTATIVAS` por `tentativas >= 2` em vermelho_replanejar ⇒ sobreposição em tentativas=2 ⇒ 1"},
+    I6: {nome: "humano só por aprovacao_humana",
+         enunciado: "toda transição actor humano sai SÓ de AGUARDANDO_HUMANO e tem `aprovacao_humana` na guarda; toda guarda com aprovacao_humana é actor humano; nenhuma transição não humana sai de AGUARDANDO_HUMANO",
+         algoritmo: "varredura das transições",
+         falha_se: "qualquer violação das três cláusulas",
+         complemento_codigo: "G7 + hook selftest: só co_hook.cmd_aprovar grava <ws>/aprovacoes/**, o evento `aprovacao` e as transições de actor humano (na mesma chamada, após tty + desafio + hash_estado, modelo AC-04); `co.py ev aprovado|rejeitado|abandonar` ⇒ 2 (grep + selftest com payloads de subagente e principal; D9)",
+         negativo: "transição humana saindo de VERIFICAR ⇒ 1; transição script saindo de AGUARDANDO_HUMANO ⇒ 1"},
+    I7: {nome: "monotonicidade",
+         enunciado: "terminais (ENTREGUE, ABANDONADO, DESCARTADA, INTEGRADA, ABANDONADA) não têm saída; estáveis (ACEITA) só saem por transição com motivo_obrigatorio:true; ORACULO só é reentrado (após o 1º freeze) via AGUARDANDO_HUMANO[oraculo_mudar] ou rejeição do próprio portão oraculo",
+         algoritmo: "varredura: transições com from ∩ estaveis exigem motivo_obrigatorio; transições com to=ORACULO só de AGUARDANDO_HUMANO com requer.portao ∈ {stop, oraculo, oraculo_mudar}",
+         falha_se: "saída de terminal; saída de estável sem motivo; entrada em ORACULO por outro caminho",
+         negativo: "acrescentar VERIFICAR→ORACULO direto ⇒ 1"},
+  },
+  ordem_execucao: ["S1", "S2", "S3", "S4", "I1", "I2", "I3", "I4", "I5", "I6", "I7"],
+  niveis: ["obra", "task", "campanha"],
+  cobertura_g8: "além dos invariantes, cada aresta e cada guarda tem um caso OK e um caso RECUSA na suíte (matriz gerada por `maquina check --events`)",
+}

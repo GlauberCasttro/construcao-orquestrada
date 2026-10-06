@@ -1,0 +1,112 @@
+# base do oráculo v0.4 (+R9 legado, +R7b hook, +senha/definir sem --work) contra a v0.4 implementada — 2026-10-05T14:57:54Z
+# resultado: falham só os 4 novos (R0 strength_and_normalization; R1 password_mode, weak_passwords, definir_without_work) nos dois Pythons; R7b e R9 já passam
+# comando: python3 -m unittest test_v04_frase -v  (Python 3.13.3)
+test_canonical_and_tag (test_v04_frase.R0ModuloFraseTest.test_canonical_and_tag) ... ok
+test_strength_and_normalization (test_v04_frase.R0ModuloFraseTest.test_strength_and_normalization) ... FAIL
+test_change_requires_old_phrase (test_v04_frase.R1FraseDefinirTest.test_change_requires_old_phrase) ... ok
+test_confirmation_mismatch_refused (test_v04_frase.R1FraseDefinirTest.test_confirmation_mismatch_refused) ... ok
+test_default_path_is_home_dot_claude (test_v04_frase.R1FraseDefinirTest.test_default_path_is_home_dot_claude) ... ok
+test_definir_requires_tty (test_v04_frase.R1FraseDefinirTest.test_definir_requires_tty) ... ok
+test_definir_stores_only_salt_and_pbkdf2_verifier_mode_0600 (test_v04_frase.R1FraseDefinirTest.test_definir_stores_only_salt_and_pbkdf2_verifier_mode_0600) ... ok
+A frase é do founder, não da campanha: `ac.py frase definir` dispensa --work; o resto continua exigindo. ... FAIL
+Modo senha: definir aceita SENHA e gate aprova com ela (e só com ela). ... FAIL
+frase.json adulterado para kdf desconhecido ou iter < 600000 (verificador coerente): recusa, nada gravado. ... ok
+test_weak_passwords_refused (test_v04_frase.R1FraseDefinirTest.test_weak_passwords_refused) ... FAIL
+test_weak_phrases_refused (test_v04_frase.R1FraseDefinirTest.test_weak_phrases_refused) ... ok
+test_gate_with_phrase_records_tag_in_state_ledger_and_audit (test_v04_frase.R2AprovacaoComFraseTest.test_gate_with_phrase_records_tag_in_state_ledger_and_audit) ... ok
+test_no_phrase_defined_refused_with_instruction (test_v04_frase.R2AprovacaoComFraseTest.test_no_phrase_defined_refused_with_instruction) ... ok
+test_preauth_with_phrase_records_tag (test_v04_frase.R2AprovacaoComFraseTest.test_preauth_with_phrase_records_tag) ... ok
+test_reject_decision_also_tagged (test_v04_frase.R2AprovacaoComFraseTest.test_reject_decision_also_tagged) ... ok
+test_wrong_phrase_exit_nonzero_nothing_recorded (test_v04_frase.R2AprovacaoComFraseTest.test_wrong_phrase_exit_nonzero_nothing_recorded) ... ok
+Agente troca frase.json pela frase DELE e forja com a chave dele: a frase do founder não confere. ... ok
+test_audit_line_missing_caught (test_v04_frase.R3ConferirTest.test_audit_line_missing_caught) ... ok
+test_conferir_requires_tty (test_v04_frase.R3ConferirTest.test_conferir_requires_tty) ... ok
+test_forged_frase_conferida_caught (test_v04_frase.R3ConferirTest.test_forged_frase_conferida_caught) ... ok
+test_forged_random_tag_caught (test_v04_frase.R3ConferirTest.test_forged_random_tag_caught) ... ok
+test_forged_tag_from_wrong_phrase_caught (test_v04_frase.R3ConferirTest.test_forged_tag_from_wrong_phrase_caught) ... ok
+test_forged_without_tag_caught (test_v04_frase.R3ConferirTest.test_forged_without_tag_caught) ... ok
+test_in_audit_but_missing_from_ledger_caught (test_v04_frase.R3ConferirTest.test_in_audit_but_missing_from_ledger_caught) ... ok
+test_legit_approvals_confer_and_record_frase_conferida (test_v04_frase.R3ConferirTest.test_legit_approvals_confer_and_record_frase_conferida) ... ok
+...e ainda copia a linha antiga do ledger (e do audit) para depois do round-new. ... ok
+Agente devolve ao state.json o commit aprovado na rodada anterior (mesmo seq/tag, válidos). ... ok
+test_replayed_valid_tag_caught (test_v04_frase.R3ConferirTest.test_replayed_valid_tag_caught) ... ok
+test_state_only_forged_gate_caught (test_v04_frase.R3ConferirTest.test_state_only_forged_gate_caught) ... ok
+test_wrong_phrase_at_conferir_refused_nothing_recorded (test_v04_frase.R3ConferirTest.test_wrong_phrase_at_conferir_refused_nothing_recorded) ... ok
+test_approval_after_conferida_requires_new_conferida (test_v04_frase.R4DoneDecisaoTest.test_approval_after_conferida_requires_new_conferida) ... ok
+test_done_decisao_needs_frase_conferida (test_v04_frase.R4DoneDecisaoTest.test_done_decisao_needs_frase_conferida) ... ok
+test_env_vars_never_supply_phrase (test_v04_frase.R5SemCanalAlternativoTest.test_env_vars_never_supply_phrase) ... ok
+test_frase_flag_refused (test_v04_frase.R5SemCanalAlternativoTest.test_frase_flag_refused) ... ok
+test_phrase_never_written_anywhere (test_v04_frase.R5SemCanalAlternativoTest.test_phrase_never_written_anywhere) ... ok
+test_piped_stdin_refused_even_with_correct_phrase_and_tty (test_v04_frase.R5SemCanalAlternativoTest.test_piped_stdin_refused_even_with_correct_phrase_and_tty) ... ok
+test_import_and_call_directly_refused (test_v04_frase.R6ForjaTest.test_import_and_call_directly_refused) ... ok
+test_pty_agent_without_phrase_refused_with_phrase_accepted (test_v04_frase.R6ForjaTest.test_pty_agent_without_phrase_refused_with_phrase_accepted) ... ok
+test_hook_allows_reading_about_frase (test_v04_frase.R7HookTest.test_hook_allows_reading_about_frase) ... ok
+test_hook_denies_frase_commands (test_v04_frase.R7HookTest.test_hook_denies_frase_commands) ... ok
+test_approvals_still_denied (test_v04_frase.R7bHookUsoRealTest.test_approvals_still_denied) ... ok
+test_legit_commands_allowed (test_v04_frase.R7bHookUsoRealTest.test_legit_commands_allowed) ... ok
+test_comma_glob_refused_or_split (test_v04_frase.R8EscopoVirgulaTest.test_comma_glob_refused_or_split) ... ok
+test_assinar_legado_signs_each_then_conferir_passes (test_v04_frase.R9LegadoTest.test_assinar_legado_signs_each_then_conferir_passes) ... ok
+test_assinar_legado_wrong_phrase_nothing_recorded (test_v04_frase.R9LegadoTest.test_assinar_legado_wrong_phrase_nothing_recorded) ... ok
+Agente acrescenta, depois de eventos tagueados, uma aprovação sem tag com ts antigo (retroativo). ... ok
+test_conferir_without_flag_lists_legacy_with_instruction (test_v04_frase.R9LegadoTest.test_conferir_without_flag_lists_legacy_with_instruction) ... ok
+test_definir_records_criada_em (test_v04_frase.R9LegadoTest.test_definir_records_criada_em) ... ok
+test_forged_legado_assinado_caught (test_v04_frase.R9LegadoTest.test_forged_legado_assinado_caught) ... ok
+test_mixed_legacy_and_forgery_signs_nothing (test_v04_frase.R9LegadoTest.test_mixed_legacy_and_forgery_signs_nothing) ... ok
+test_untagged_after_criada_em_is_forgery (test_v04_frase.R9LegadoTest.test_untagged_after_criada_em_is_forgery) ... ok
+Ran 52 tests in 41.852s
+FAILED (failures=4)
+# comando: /usr/bin/python3 -m unittest test_v04_frase -v  (Python 3.9.6)
+test_canonical_and_tag (test_v04_frase.R0ModuloFraseTest) ... ok
+test_strength_and_normalization (test_v04_frase.R0ModuloFraseTest) ... FAIL
+test_change_requires_old_phrase (test_v04_frase.R1FraseDefinirTest) ... ok
+test_confirmation_mismatch_refused (test_v04_frase.R1FraseDefinirTest) ... ok
+test_default_path_is_home_dot_claude (test_v04_frase.R1FraseDefinirTest) ... ok
+test_definir_requires_tty (test_v04_frase.R1FraseDefinirTest) ... ok
+test_definir_stores_only_salt_and_pbkdf2_verifier_mode_0600 (test_v04_frase.R1FraseDefinirTest) ... ok
+A frase é do founder, não da campanha: `ac.py frase definir` dispensa --work; o resto continua exigindo. ... FAIL
+Modo senha: definir aceita SENHA e gate aprova com ela (e só com ela). ... FAIL
+frase.json adulterado para kdf desconhecido ou iter < 600000 (verificador coerente): recusa, nada gravado. ... ok
+test_weak_passwords_refused (test_v04_frase.R1FraseDefinirTest) ... FAIL
+test_weak_phrases_refused (test_v04_frase.R1FraseDefinirTest) ... ok
+test_gate_with_phrase_records_tag_in_state_ledger_and_audit (test_v04_frase.R2AprovacaoComFraseTest) ... ok
+test_no_phrase_defined_refused_with_instruction (test_v04_frase.R2AprovacaoComFraseTest) ... ok
+test_preauth_with_phrase_records_tag (test_v04_frase.R2AprovacaoComFraseTest) ... ok
+test_reject_decision_also_tagged (test_v04_frase.R2AprovacaoComFraseTest) ... ok
+test_wrong_phrase_exit_nonzero_nothing_recorded (test_v04_frase.R2AprovacaoComFraseTest) ... ok
+Agente troca frase.json pela frase DELE e forja com a chave dele: a frase do founder não confere. ... ok
+test_audit_line_missing_caught (test_v04_frase.R3ConferirTest) ... ok
+test_conferir_requires_tty (test_v04_frase.R3ConferirTest) ... ok
+test_forged_frase_conferida_caught (test_v04_frase.R3ConferirTest) ... ok
+test_forged_random_tag_caught (test_v04_frase.R3ConferirTest) ... ok
+test_forged_tag_from_wrong_phrase_caught (test_v04_frase.R3ConferirTest) ... ok
+test_forged_without_tag_caught (test_v04_frase.R3ConferirTest) ... ok
+test_in_audit_but_missing_from_ledger_caught (test_v04_frase.R3ConferirTest) ... ok
+test_legit_approvals_confer_and_record_frase_conferida (test_v04_frase.R3ConferirTest) ... ok
+...e ainda copia a linha antiga do ledger (e do audit) para depois do round-new. ... ok
+Agente devolve ao state.json o commit aprovado na rodada anterior (mesmo seq/tag, válidos). ... ok
+test_replayed_valid_tag_caught (test_v04_frase.R3ConferirTest) ... ok
+test_state_only_forged_gate_caught (test_v04_frase.R3ConferirTest) ... ok
+test_wrong_phrase_at_conferir_refused_nothing_recorded (test_v04_frase.R3ConferirTest) ... ok
+test_approval_after_conferida_requires_new_conferida (test_v04_frase.R4DoneDecisaoTest) ... ok
+test_done_decisao_needs_frase_conferida (test_v04_frase.R4DoneDecisaoTest) ... ok
+test_env_vars_never_supply_phrase (test_v04_frase.R5SemCanalAlternativoTest) ... ok
+test_frase_flag_refused (test_v04_frase.R5SemCanalAlternativoTest) ... ok
+test_phrase_never_written_anywhere (test_v04_frase.R5SemCanalAlternativoTest) ... ok
+test_piped_stdin_refused_even_with_correct_phrase_and_tty (test_v04_frase.R5SemCanalAlternativoTest) ... ok
+test_import_and_call_directly_refused (test_v04_frase.R6ForjaTest) ... ok
+test_pty_agent_without_phrase_refused_with_phrase_accepted (test_v04_frase.R6ForjaTest) ... ok
+test_hook_allows_reading_about_frase (test_v04_frase.R7HookTest) ... ok
+test_hook_denies_frase_commands (test_v04_frase.R7HookTest) ... ok
+test_approvals_still_denied (test_v04_frase.R7bHookUsoRealTest) ... ok
+test_legit_commands_allowed (test_v04_frase.R7bHookUsoRealTest) ... ok
+test_comma_glob_refused_or_split (test_v04_frase.R8EscopoVirgulaTest) ... ok
+test_assinar_legado_signs_each_then_conferir_passes (test_v04_frase.R9LegadoTest) ... ok
+test_assinar_legado_wrong_phrase_nothing_recorded (test_v04_frase.R9LegadoTest) ... ok
+Agente acrescenta, depois de eventos tagueados, uma aprovação sem tag com ts antigo (retroativo). ... ok
+test_conferir_without_flag_lists_legacy_with_instruction (test_v04_frase.R9LegadoTest) ... ok
+test_definir_records_criada_em (test_v04_frase.R9LegadoTest) ... ok
+test_forged_legado_assinado_caught (test_v04_frase.R9LegadoTest) ... ok
+test_mixed_legacy_and_forgery_signs_nothing (test_v04_frase.R9LegadoTest) ... ok
+test_untagged_after_criada_em_is_forgery (test_v04_frase.R9LegadoTest) ... ok
+Ran 52 tests in 70.115s
+FAILED (failures=4)

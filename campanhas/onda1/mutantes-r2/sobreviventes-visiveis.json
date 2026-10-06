@@ -1,0 +1,154 @@
+{
+ "visiveis": [
+  {
+   "id": "E19",
+   "arquivo": "co_estado.py",
+   "linha": 1163,
+   "tipo": "retorno_constante",
+   "descricao": "transicionar: aprovacao_humana sempre True",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "E33",
+   "arquivo": "co_estado.py",
+   "linha": 945,
+   "tipo": "retorno_constante",
+   "descricao": "_a_retomar_md_valido sempre True",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "E40",
+   "arquivo": "co_estado.py",
+   "linha": 807,
+   "tipo": "retorno_constante",
+   "descricao": "hook_selftest_estatico sempre True",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "P07",
+   "arquivo": "co_portao.py",
+   "linha": 837,
+   "tipo": "retorno_constante",
+   "descricao": "veredito(ws) sempre GO",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "C04",
+   "arquivo": "co.py",
+   "linha": 205,
+   "tipo": "retorno_constante",
+   "descricao": "co.py: erro interno sai com 0",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "E24",
+   "arquivo": "co_estado.py",
+   "linha": 1156,
+   "tipo": "feature_removida",
+   "descricao": "transicionar não reconfere hash_estado sob a trava (TOCTOU A10)",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "P21",
+   "arquivo": "co_portao.py",
+   "linha": 498,
+   "tipo": "feature_removida",
+   "descricao": "G3 ignora caminhos protegidos",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "E09",
+   "arquivo": "co_estado.py",
+   "linha": 311,
+   "tipo": "conferencia_hash_desligada",
+   "descricao": "problemas_cadeia não confere payload_hash",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "P19",
+   "arquivo": "co_portao.py",
+   "linha": 688,
+   "tipo": "feature_removida",
+   "descricao": "rodar com --only mantém final=true",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "H14",
+   "arquivo": "co_hook.py",
+   "linha": 663,
+   "tipo": "feature_removida",
+   "descricao": "destrutivo sobre ancestral de workspace permitido",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "E17",
+   "arquivo": "co_estado.py",
+   "linha": 419,
+   "tipo": "precedencia_trocada",
+   "descricao": "parse_guarda: and/or com precedência trocada",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "H12",
+   "arquivo": "co_hook.py",
+   "linha": 659,
+   "tipo": "feature_removida",
+   "descricao": "escrita no audit não é bloqueada",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "P12",
+   "arquivo": "co_portao.py",
+   "linha": 818,
+   "tipo": "conferencia_hash_desligada",
+   "descricao": "veredito_detalhado não confere regressao_hash do relatório",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "E27",
+   "arquivo": "co_estado.py",
+   "linha": 607,
+   "tipo": "feature_removida",
+   "descricao": "fold aceita operacional com ator/de/para incoerentes",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "E11",
+   "arquivo": "co_estado.py",
+   "linha": 307,
+   "tipo": "conferencia_hash_desligada",
+   "descricao": "problemas_cadeia não confere encadeamento prev",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  }
+ ]
+}

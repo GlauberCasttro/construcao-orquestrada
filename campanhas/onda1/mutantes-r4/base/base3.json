@@ -1,0 +1,27 @@
+{
+ "heldout": {
+  "rodados": 64,
+  "falhas": 0,
+  "erros": 0,
+  "pulados": 0,
+  "falharam": [],
+  "s": 26.4
+ },
+ "visiveis": {
+  "rodados": 186,
+  "falhas": 0,
+  "erros": 0,
+  "pulados": 0,
+  "falharam": [],
+  "s": 103.0
+ },
+ "gerado": {
+  "rodados": 15,
+  "falhas": 0,
+  "erros": 0,
+  "pulados": 0,
+  "falharam": [],
+  "s": 469.1
+ },
+ "morto": false
+}

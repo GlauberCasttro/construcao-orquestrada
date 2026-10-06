@@ -1,0 +1,104 @@
+{
+ "ocultos": [
+  {
+   "id": "E36",
+   "arquivo": "co_estado.py",
+   "linha": 833,
+   "tipo": "conferencia_hash_desligada",
+   "descricao": "_gate_report_valido não confere gate_report_hash do ledger",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "P10",
+   "arquivo": "co_portao.py",
+   "linha": 147,
+   "tipo": "conferencia_hash_desligada",
+   "descricao": "divergencias_registradas não confere plano_hash",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "E37",
+   "arquivo": "co_estado.py",
+   "linha": 2098,
+   "tipo": "conferencia_hash_desligada",
+   "descricao": "congelar_oraculo não confere hash registrado pelo ac.py",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "E14",
+   "arquivo": "co_estado.py",
+   "linha": 265,
+   "tipo": "bypass_lock",
+   "descricao": "trava_ledger não adquire flock (bypass do lock)",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "H24",
+   "arquivo": "co_hook.py",
+   "linha": 861,
+   "tipo": "feature_removida",
+   "descricao": "anexar_audit aceita audit dentro de workspace",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "E31",
+   "arquivo": "co_estado.py",
+   "linha": 1566,
+   "tipo": "condicao_invertida",
+   "descricao": "checar_maquina I6 não exige aprovacao_humana na guarda",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "E38",
+   "arquivo": "co_estado.py",
+   "linha": 2058,
+   "tipo": "condicao_invertida",
+   "descricao": "preparar_congelamento: or→and (oráculo sem asserções passa)",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "E34",
+   "arquivo": "co_estado.py",
+   "linha": 972,
+   "tipo": "feature_removida",
+   "descricao": "relatorio_satisfaz_entrega aceita relatório simulado",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "E10",
+   "arquivo": "co_estado.py",
+   "linha": 309,
+   "tipo": "conferencia_hash_desligada",
+   "descricao": "problemas_cadeia não confere hash do registro",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  },
+  {
+   "id": "E18",
+   "arquivo": "co_estado.py",
+   "linha": 1162,
+   "tipo": "precedencia_trocada",
+   "descricao": "transicionar: atomos do chamador sobrepõem aprovacao_humana",
+   "morto": false,
+   "morto_por": null,
+   "equivalente": false
+  }
+ ]
+}

@@ -1,0 +1,15 @@
+# notas privadas desta máquina (nomes reais, caminhos, lista de termos privados) — nunca publicadas
+local/
+# pacote gerado
+dist/
+# cópias de trabalho, portões e ledgers de campanha (ficam só na máquina)
+campanhas/work/
+campanhas/portao-*/
+.auto-correcao/
+# lixo
+__pycache__/
+*.pyc
+.DS_Store
+*.tgz
+*.zip
+.venv/

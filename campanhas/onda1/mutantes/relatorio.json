@@ -1,0 +1,856 @@
+{
+ "mutantes": [
+  {
+   "id": "E01",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 310,
+   "tipo": "retorno_constante",
+   "descricao": "verificar_cadeia sempre True",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E02",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 304,
+   "tipo": "retorno_constante",
+   "descricao": "problemas_cadeia sempre [] (cadeia sempre íntegra)",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_retomar_com_linha_do_ledger_editada_sai_1 (test_a_estado.TestRetomada.test_retomar_com_linha_do_ledger_editada_sai_1)"
+   ]
+  },
+  {
+   "id": "E03",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 282,
+   "tipo": "hash_sem_prev",
+   "descricao": "hash_registro sem prefixo prev",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_campanhas_abertas_com_tentativas_no_teto_vai_para_replanejar (test_a_estado.TestEvGuardas.test_campanhas_abertas_com_tentativas_no_teto_vai_para_replanejar)"
+   ]
+  },
+  {
+   "id": "E04",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 294,
+   "tipo": "feature_removida",
+   "descricao": "problemas_cadeia não confere prev",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E05",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 298,
+   "tipo": "feature_removida",
+   "descricao": "problemas_cadeia não confere payload_hash",
+   "morto": true,
+   "morto_por": [
+    "heldout:test_retomar_com_cadeia_reencadeada_mas_payload_hash_velho_sai_1 (test_heldout_a.HeldoutCadeia.test_retomar_com_cadeia_reencadeada_mas_payload_hash_velho_sai_1)"
+   ]
+  },
+  {
+   "id": "E06",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 303,
+   "tipo": "feature_removida",
+   "descricao": "problemas_cadeia não exige gênese em seq 1",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E07",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 292,
+   "tipo": "feature_removida",
+   "descricao": "problemas_cadeia não confere seq",
+   "morto": true,
+   "morto_por": [
+    "heldout:test_retomar_com_seq_com_lacuna_sai_1 (test_heldout_a.HeldoutCadeia.test_retomar_com_seq_com_lacuna_sai_1)"
+   ]
+  },
+  {
+   "id": "E08",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 1797,
+   "tipo": "aprovacao_sem_tty",
+   "descricao": "_stdin_tty sempre True",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E09",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 1805,
+   "tipo": "aprovacao_sem_tty",
+   "descricao": "human_channel sem desafio (retorna '/dev/tty' sem perguntar)",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_aprovado_no_tty_grava_arquivo_evento_transicao_e_audit (test_b_aprovar.TestAprovarNoTerminal.test_aprovado_no_tty_grava_arquivo_evento_transicao_e_audit)"
+   ]
+  },
+  {
+   "id": "E10",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 1861,
+   "tipo": "aprovacao_sem_tty",
+   "descricao": "aprovar sem tty nenhum (cmd_aprovar sem checagem + human_channel constante)",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_aprovado_no_tty_grava_arquivo_evento_transicao_e_audit (test_b_aprovar.TestAprovarNoTerminal.test_aprovado_no_tty_grava_arquivo_evento_transicao_e_audit)"
+   ]
+  },
+  {
+   "id": "E11",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 1827,
+   "tipo": "feature_removida",
+   "descricao": "desafio aceita qualquer resposta",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_desafio_errado_sai_1_e_nada_gravado (test_b_aprovar.TestAprovarNoTerminal.test_desafio_errado_sai_1_e_nada_gravado)"
+   ]
+  },
+  {
+   "id": "E12",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 1876,
+   "tipo": "feature_removida",
+   "descricao": "cmd_aprovar sem checagem TOCTOU de hash_estado",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E13",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 1075,
+   "tipo": "feature_removida",
+   "descricao": "transicionar aceita transição humana sem canal humano (I6)",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E14",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 1072,
+   "tipo": "inversao_limite",
+   "descricao": "não-determinismo só com >2 guardas verdadeiras",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E15",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 510,
+   "tipo": "retorno_constante",
+   "descricao": "avaliar_guarda sempre True",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E16",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 1068,
+   "tipo": "inversao_limite",
+   "descricao": "guarda indeterminada conta como verdadeira (fail-open)",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E17",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 678,
+   "tipo": "feature_removida",
+   "descricao": "fold aceita transição humana sem `aprovacao` imediatamente antes",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E18",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 502,
+   "tipo": "inversao_limite",
+   "descricao": "comparador >= vira >",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_campanhas_abertas_com_tentativas_no_teto_vai_para_replanejar (test_a_estado.TestEvGuardas.test_campanhas_abertas_com_tentativas_no_teto_vai_para_replanejar)"
+   ]
+  },
+  {
+   "id": "E19",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 491,
+   "tipo": "inversao_limite",
+   "descricao": "and de Kleene: indeterminado vira True",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E20",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 684,
+   "tipo": "inversao_limite",
+   "descricao": "contador de obra não incrementa (+0)",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_campanhas_abertas_com_tentativas_no_teto_vai_para_replanejar (test_a_estado.TestEvGuardas.test_campanhas_abertas_com_tentativas_no_teto_vai_para_replanejar)"
+   ]
+  },
+  {
+   "id": "E21",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 560,
+   "tipo": "inversao_limite",
+   "descricao": "tetos (constantes) +1",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_campanhas_abertas_com_tentativas_no_teto_vai_para_replanejar (test_a_estado.TestEvGuardas.test_campanhas_abertas_com_tentativas_no_teto_vai_para_replanejar)"
+   ]
+  },
+  {
+   "id": "E22",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 933,
+   "tipo": "inversao_limite",
+   "descricao": "lote_cabe_no_teto < vira <=",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E23",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 353,
+   "tipo": "feature_removida",
+   "descricao": "append_evento grava sobre cadeia quebrada",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E24",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 712,
+   "tipo": "feature_removida",
+   "descricao": "fold não recusa cadeia quebrada",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E25",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 816,
+   "tipo": "retorno_constante",
+   "descricao": "átomo hook_vivo sempre True",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_iniciar_sem_hook_vivo_sai_1_e_ledger_byte_a_byte (test_a_estado.TestEvGuardas.test_iniciar_sem_hook_vivo_sai_1_e_ledger_byte_a_byte)"
+   ]
+  },
+  {
+   "id": "E26",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 823,
+   "tipo": "retorno_constante",
+   "descricao": "átomo workspace_fora_do_alvo sempre True",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E27",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 1867,
+   "tipo": "feature_removida",
+   "descricao": "cmd_aprovar não recusa audit dentro do workspace",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_audit_dentro_do_workspace_sai_1_e_nada_gravado (test_b_aprovar.TestAprovarNoTerminal.test_audit_dentro_do_workspace_sai_1_e_nada_gravado)"
+   ]
+  },
+  {
+   "id": "E28",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 887,
+   "tipo": "inversao_limite",
+   "descricao": "pass3_final aceita k>=2",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E29",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 748,
+   "tipo": "feature_removida",
+   "descricao": "hook_vivo_no_audit aceita linha não bloqueada",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E30",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 1048,
+   "tipo": "feature_removida",
+   "descricao": "transicionar grava sobre cadeia quebrada",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "E31",
+   "arquivo": "scripts/co_estado.py",
+   "linha": 695,
+   "tipo": "inversao_limite",
+   "descricao": "teto do task (tentativas) não incrementa",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_write_ahead_conta_vivo_e_retomar_detecta_task_em_voo_perdida (test_a_estado.TestRetomada.test_write_ahead_conta_vivo_e_retomar_detecta_task_em_voo_perdida)"
+   ]
+  },
+  {
+   "id": "H01",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 679,
+   "tipo": "retorno_constante",
+   "descricao": "classificar sempre permite",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_iniciar_com_hook_vivo_vai_para_premissas (test_a_estado.TestIntegracaoHookVivo.test_iniciar_com_hook_vivo_vai_para_premissas)"
+   ]
+  },
+  {
+   "id": "H02",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 746,
+   "tipo": "retorno_constante",
+   "descricao": "run_raw sempre exit 0",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_bloqueia_aprovacao_pelo_principal_com_variacoes (test_b_hook.TestHookAprovacao.test_bloqueia_aprovacao_pelo_principal_com_variacoes)"
+   ]
+  },
+  {
+   "id": "H03",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 986,
+   "tipo": "retorno_constante",
+   "descricao": "main do hook sempre 0",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_bloqueia_aprovacao_pelo_principal_com_variacoes (test_b_hook.TestHookAprovacao.test_bloqueia_aprovacao_pelo_principal_com_variacoes)"
+   ]
+  },
+  {
+   "id": "H04",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 210,
+   "tipo": "retorno_constante",
+   "descricao": "check_aprovacao sempre (None, [])",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_iniciar_com_hook_vivo_vai_para_premissas (test_a_estado.TestIntegracaoHookVivo.test_iniciar_com_hook_vivo_vai_para_premissas)"
+   ]
+  },
+  {
+   "id": "H05",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 180,
+   "tipo": "retorno_constante",
+   "descricao": "approval_hit sempre []",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_iniciar_com_hook_vivo_vai_para_premissas (test_a_estado.TestIntegracaoHookVivo.test_iniciar_com_hook_vivo_vai_para_premissas)"
+   ]
+  },
+  {
+   "id": "H06",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 519,
+   "tipo": "feature_removida",
+   "descricao": "_decide_leitura no-op (held-out legível)",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_iniciar_com_hook_vivo_vai_para_premissas (test_a_estado.TestIntegracaoHookVivo.test_iniciar_com_hook_vivo_vai_para_premissas)"
+   ]
+  },
+  {
+   "id": "H07",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 500,
+   "tipo": "feature_removida",
+   "descricao": "_decide_escrita no-op (protegidos graváveis)",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_iniciar_com_hook_vivo_vai_para_premissas (test_a_estado.TestIntegracaoHookVivo.test_iniciar_com_hook_vivo_vai_para_premissas)"
+   ]
+  },
+  {
+   "id": "H08",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 487,
+   "tipo": "inversao_limite",
+   "descricao": "_e_construtor invertido (autor vira construtor)",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_iniciar_com_hook_vivo_vai_para_premissas (test_a_estado.TestIntegracaoHookVivo.test_iniciar_com_hook_vivo_vai_para_premissas)"
+   ]
+  },
+  {
+   "id": "H09",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 485,
+   "tipo": "inversao_limite",
+   "descricao": "subagente sem agent_type não é construtor (fail-open)",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_iniciar_com_hook_vivo_vai_para_premissas (test_a_estado.TestIntegracaoHookVivo.test_iniciar_com_hook_vivo_vai_para_premissas)"
+   ]
+  },
+  {
+   "id": "H10",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 494,
+   "tipo": "feature_removida",
+   "descricao": "autor do oráculo pode escrever o MANIFEST",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_iniciar_com_hook_vivo_vai_para_premissas (test_a_estado.TestIntegracaoHookVivo.test_iniciar_com_hook_vivo_vai_para_premissas)"
+   ]
+  },
+  {
+   "id": "H11",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 379,
+   "tipo": "feature_removida",
+   "descricao": "aprovacoes/ deixa de ser protegido",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_iniciar_com_hook_vivo_vai_para_premissas (test_a_estado.TestIntegracaoHookVivo.test_iniciar_com_hook_vivo_vai_para_premissas)"
+   ]
+  },
+  {
+   "id": "H12",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 731,
+   "tipo": "feature_removida",
+   "descricao": "run_raw sem falha fechada para payload inválido",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_iniciar_com_hook_vivo_vai_para_premissas (test_a_estado.TestIntegracaoHookVivo.test_iniciar_com_hook_vivo_vai_para_premissas)"
+   ]
+  },
+  {
+   "id": "H13",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 210,
+   "tipo": "inversao_limite",
+   "descricao": "limite de aninhamento > 6 vira > 60",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "H14",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 249,
+   "tipo": "feature_removida",
+   "descricao": "ARG_EXECUTORS (xargs/env/eval...) não analisados",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "H15",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 476,
+   "tipo": "inversao_limite",
+   "descricao": "subagente tratado como agente principal",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_iniciar_com_hook_vivo_vai_para_premissas (test_a_estado.TestIntegracaoHookVivo.test_iniciar_com_hook_vivo_vai_para_premissas)"
+   ]
+  },
+  {
+   "id": "H16",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 741,
+   "tipo": "feature_removida",
+   "descricao": "hook não grava audit",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_bloqueio_e_chamada_que_cita_co_py_vao_ao_audit_fora_do_ws (test_b_hook.TestHookAudit.test_bloqueio_e_chamada_que_cita_co_py_vao_ao_audit_fora_do_ws)"
+   ]
+  },
+  {
+   "id": "H17",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 237,
+   "tipo": "feature_removida",
+   "descricao": "aprovar-*.sh executável não bloqueado",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_iniciar_com_hook_vivo_vai_para_premissas (test_a_estado.TestIntegracaoHookVivo.test_iniciar_com_hook_vivo_vai_para_premissas)"
+   ]
+  },
+  {
+   "id": "H18",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 598,
+   "tipo": "feature_removida",
+   "descricao": "escrita via código embutido (python -c) ignorada",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "H19",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 578,
+   "tipo": "feature_removida",
+   "descricao": "detecção de ferramenta recursiva removida",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_iniciar_com_hook_vivo_vai_para_premissas (test_a_estado.TestIntegracaoHookVivo.test_iniciar_com_hook_vivo_vai_para_premissas)"
+   ]
+  },
+  {
+   "id": "H20",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 432,
+   "tipo": "inversao_limite",
+   "descricao": "glob vs held-out: >= vira >",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "H21",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 425,
+   "tipo": "feature_removida",
+   "descricao": "glob com ** não marca held-out",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_iniciar_com_hook_vivo_vai_para_premissas (test_a_estado.TestIntegracaoHookVivo.test_iniciar_com_hook_vivo_vai_para_premissas)"
+   ]
+  },
+  {
+   "id": "H22",
+   "arquivo": "scripts/co_hook.py",
+   "linha": 509,
+   "tipo": "feature_removida",
+   "descricao": "operação destrutiva sobre o workspace permitida",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "P01",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 659,
+   "tipo": "retorno_constante",
+   "descricao": "calcular_veredito sempre GO",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_g0_reprova_com_assercao_removida (test_c_portao.TestG0.test_g0_reprova_com_assercao_removida)"
+   ]
+  },
+  {
+   "id": "P02",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 770,
+   "tipo": "retorno_constante",
+   "descricao": "veredito_detalhado sempre GO",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_aprovacao_no_ledger_sem_linha_no_audit_e_no_go (test_c_portao.TestVeredito.test_aprovacao_no_ledger_sem_linha_no_audit_e_no_go)"
+   ]
+  },
+  {
+   "id": "P03",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 259,
+   "tipo": "retorno_constante",
+   "descricao": "G0 sempre PASS",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_g0_reprova_com_assercao_removida (test_c_portao.TestG0.test_g0_reprova_com_assercao_removida)"
+   ]
+  },
+  {
+   "id": "P04",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 458,
+   "tipo": "retorno_constante",
+   "descricao": "G3 sempre PASS",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_arquivo_fora_do_territorio_reprova (test_c_portao.TestG3Territorio.test_arquivo_fora_do_territorio_reprova)"
+   ]
+  },
+  {
+   "id": "P05",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 522,
+   "tipo": "retorno_constante",
+   "descricao": "G4 sempre PASS",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_assert_true_reprova (test_c_portao.TestG4Gaming.test_assert_true_reprova)"
+   ]
+  },
+  {
+   "id": "P06",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 128,
+   "tipo": "retorno_constante",
+   "descricao": "cadeia_ok sempre True",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "P07",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 330,
+   "tipo": "retorno_constante",
+   "descricao": "G1 sempre PASS",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_g1_reprova_com_teste_falhando (test_c_portao.TestG1.test_g1_reprova_com_teste_falhando)"
+   ]
+  },
+  {
+   "id": "P08",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 705,
+   "tipo": "inversao_limite",
+   "descricao": "precedência: waiver antes de simulado",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_selftest_do_portao_sai_0 (test_c_portao.TestVeredito.test_selftest_do_portao_sai_0)"
+   ]
+  },
+  {
+   "id": "P09",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 703,
+   "tipo": "inversao_limite",
+   "descricao": "precedência: simulado antes de falhas (NO-GO)",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_no_go_vence_simulado (test_c_portao.TestVeredito.test_no_go_vence_simulado)"
+   ]
+  },
+  {
+   "id": "P10",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 675,
+   "tipo": "feature_removida",
+   "descricao": "waiver aceito em gate sem waiver (G0/G1/G3/G4)",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_item_sem_waiver_dispensado_e_no_go (test_c_portao.TestVeredito.test_item_sem_waiver_dispensado_e_no_go)"
+   ]
+  },
+  {
+   "id": "P11",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 679,
+   "tipo": "feature_removida",
+   "descricao": "NA aceito em item que aplica",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_selftest_do_portao_sai_0 (test_c_portao.TestVeredito.test_selftest_do_portao_sai_0)"
+   ]
+  },
+  {
+   "id": "P12",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 698,
+   "tipo": "feature_removida",
+   "descricao": "item ausente do relatório não reprova",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_selftest_do_portao_sai_0 (test_c_portao.TestVeredito.test_selftest_do_portao_sai_0)"
+   ]
+  },
+  {
+   "id": "P13",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 285,
+   "tipo": "inversao_limite",
+   "descricao": "G0 tolera 1 teste a menos que o congelado",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "P14",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 279,
+   "tipo": "feature_removida",
+   "descricao": "G0 não compara hash ledger×campanha",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "P15",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 324,
+   "tipo": "feature_removida",
+   "descricao": "G1 aceita exit 0 sem testes coletados",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_g1_reprova_suite_que_sai_0_sem_coletar_teste (test_c_portao.TestG1.test_g1_reprova_suite_que_sai_0_sem_coletar_teste)"
+   ]
+  },
+  {
+   "id": "P16",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 532,
+   "tipo": "feature_removida",
+   "descricao": "G4 ignora literais do held-out",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_literal_do_heldout_no_codigo_reprova (test_c_portao.TestG4Gaming.test_literal_do_heldout_no_codigo_reprova)"
+   ]
+  },
+  {
+   "id": "P17",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 459,
+   "tipo": "feature_removida",
+   "descricao": "G3 ignora caminhos protegidos",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "P18",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 719,
+   "tipo": "retorno_constante",
+   "descricao": "aprovacoes_sem_audit sempre []",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_aprovacao_no_ledger_sem_linha_no_audit_e_no_go (test_c_portao.TestVeredito.test_aprovacao_no_ledger_sem_linha_no_audit_e_no_go)"
+   ]
+  },
+  {
+   "id": "P19",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 952,
+   "tipo": "retorno_constante",
+   "descricao": "cmd_veredito sempre exit 0",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_aprovacao_no_ledger_sem_linha_no_audit_e_no_go (test_c_portao.TestVeredito.test_aprovacao_no_ledger_sem_linha_no_audit_e_no_go)"
+   ]
+  },
+  {
+   "id": "P20",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 664,
+   "tipo": "feature_removida",
+   "descricao": "gate duplicado no relatório aceito",
+   "morto": false,
+   "morto_por": []
+  },
+  {
+   "id": "P21",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 767,
+   "tipo": "feature_removida",
+   "descricao": "veredito_detalhado ignora extras (cadeia/audit/regressao_hash)",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_aprovacao_no_ledger_sem_linha_no_audit_e_no_go (test_c_portao.TestVeredito.test_aprovacao_no_ledger_sem_linha_no_audit_e_no_go)"
+   ]
+  },
+  {
+   "id": "P22",
+   "arquivo": "scripts/co_portao.py",
+   "linha": 943,
+   "tipo": "retorno_constante",
+   "descricao": "cmd_portao sempre exit 0",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_g0_reprova_com_assercao_removida (test_c_portao.TestG0.test_g0_reprova_com_assercao_removida)"
+   ]
+  },
+  {
+   "id": "C01",
+   "arquivo": "scripts/co.py",
+   "linha": 207,
+   "tipo": "retorno_constante",
+   "descricao": "main sempre 0",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_negativos_que_valem_com_ou_sem_handler (test_a_cli.TestDispatcher.test_negativos_que_valem_com_ou_sem_handler)"
+   ]
+  },
+  {
+   "id": "C02",
+   "arquivo": "scripts/co.py",
+   "linha": 194,
+   "tipo": "inversao_limite",
+   "descricao": "Fail (NÃO) sai 0 em vez de 1",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_evento_que_nao_sai_do_estado_atual_nao_grava (test_a_estado.TestEvGuardas.test_evento_que_nao_sai_do_estado_atual_nao_grava)"
+   ]
+  },
+  {
+   "id": "C03",
+   "arquivo": "scripts/co.py",
+   "linha": 196,
+   "tipo": "inversao_limite",
+   "descricao": "Bad (erro) sai 1 em vez de 2",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_evento_inexistente_sai_2 (test_a_estado.TestEvGuardas.test_evento_inexistente_sai_2)"
+   ]
+  },
+  {
+   "id": "C04",
+   "arquivo": "scripts/co.py",
+   "linha": 190,
+   "tipo": "retorno_constante",
+   "descricao": "erro de argparse sai 0",
+   "morto": true,
+   "morto_por": [
+    "visivel:test_escolhas_invalidas_saem_2_pelo_argparse (test_a_cli.TestDispatcher.test_escolhas_invalidas_saem_2_pelo_argparse)"
+   ]
+  }
+ ],
+ "total": 79,
+ "mortos": 51,
+ "taxa": 0.6456,
+ "retorno_constante": {
+  "total": 22,
+  "mortos": 18
+ },
+ "por_tipo": {
+  "retorno_constante": {
+   "total": 22,
+   "mortos": 18
+  },
+  "hash_sem_prev": {
+   "total": 1,
+   "mortos": 1
+  },
+  "feature_removida": {
+   "total": 34,
+   "mortos": 19
+  },
+  "aprovacao_sem_tty": {
+   "total": 3,
+   "mortos": 2
+  },
+  "inversao_limite": {
+   "total": 19,
+   "mortos": 11
+  }
+ },
+ "criterio_founder": {
+  "taxa_min": 0.8,
+  "todos_rc_mortos": true,
+  "atendido": false
+ },
+ "oraculo_medido": {
+  "visivel": "tests/onda1 (99 testes, snapshot sem test_r2_achados.py)",
+  "heldout": "test_heldout_a/b/c.py (39 testes; test_heldout_r2.py excluído: chegou durante a medição e importa test_r2_achados, vermelho no código atual)"
+ },
+ "metodo": "cópia da skill em HOME temporário (.claude/skills/construcao-orquestrada + symlink auto-correcao); 1 mutante por vez, restaurado entre mutantes; visível com -f, held-out só se o visível passar; PYTHONDONTWRITEBYTECODE=1"
+}

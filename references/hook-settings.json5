@@ -1,0 +1,16 @@
+// Trecho de ~/.claude/settings.json que instala o hook global da construcao-orquestrada (contrato.hook).
+// Mesclar em `hooks.PreToolUse` (não substituir outros hooks). Instalação é do founder; nenhum agente edita settings.
+// Depois de instalar: `co.py --work <ws> hook selftest` (estático) e o selftest vivo (um agente tenta
+// `co.py --work <ws> aprovar __selftest__`, o hook bloqueia e registra; `co.py --work <ws> hook selftest --vivo` ⇒ 0).
+{
+  hooks: {
+    PreToolUse: [
+      {
+        matcher: "Bash|Write|Edit|MultiEdit|NotebookEdit|Read|Grep|Glob",
+        hooks: [
+          {type: "command", command: "python3 ~/.claude/skills/construcao-orquestrada/scripts/co_hook.py"},
+        ],
+      },
+    ],
+  },
+}

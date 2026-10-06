@@ -1,0 +1,22 @@
+{
+ "heldout": {
+  "dir": "campanhas/onda1/oraculo/heldout",
+  "rodados": 64,
+  "falhas": 0,
+  "erros": 0,
+  "pulados": 0,
+  "ok": true,
+  "falharam": [],
+  "segundos": 24.2
+ },
+ "visiveis": {
+  "dir": "campanhas/onda1/mutantes-r4/b1/.claude/skills/construcao-orquestrada/tests/onda1",
+  "rodados": 186,
+  "falhas": 0,
+  "erros": 0,
+  "pulados": 0,
+  "ok": true,
+  "falharam": [],
+  "segundos": 96.6
+ }
+}

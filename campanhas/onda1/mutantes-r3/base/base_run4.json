@@ -1,0 +1,19 @@
+{
+ "heldout": {
+  "rodados": 64,
+  "falhas": 0,
+  "erros": 0,
+  "pulados": 0,
+  "falharam": [],
+  "s": 30.7
+ },
+ "visiveis": {
+  "rodados": 180,
+  "falhas": 0,
+  "erros": 0,
+  "pulados": 0,
+  "falharam": [],
+  "s": 109.0
+ },
+ "morto": false
+}

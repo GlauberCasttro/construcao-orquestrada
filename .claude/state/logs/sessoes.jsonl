@@ -1,0 +1,2 @@
+{"ts": "2026-10-06T11:30:01-03:00", "evento": "nota", "resumo": "harness-dev construido: tools, skills, state, testes; baseline das suites da onda 1 medido (verde nos 2 Pythons)", "frente": null, "frentes_ativas": [], "branch": "master", "head": "be1d03c"}
+{"ts": "2026-10-06T12:29:00-03:00", "evento": "nota", "resumo": "projeto montado: skill (onda 0 + onda 1 em andamento) + harness com motor embutido + campanhas; suites verdes nos 2 Pythons; P-01 registrada como proposta", "frente": null, "frentes_ativas": [], "branch": "?", "head": "?"}

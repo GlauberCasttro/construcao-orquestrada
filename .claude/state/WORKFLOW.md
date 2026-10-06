@@ -6,8 +6,7 @@ mantido por `python3 .claude/tools/frente.py` (open/pause/resume/close); a tabel
 <!-- frentes:begin -->
 ```json
 {
- "ativas": [],
- "pausadas": [
+ "ativas": [
   {
    "nome": "onda1",
    "campanha": "campanhas/onda1",
@@ -15,6 +14,7 @@ mantido por `python3 .claude/tools/frente.py` (open/pause/resume/close); a tabel
    "desde": "2026-10-04"
   }
  ],
+ "pausadas": [],
  "entregas": [
   {
    "nome": "onda0",
@@ -31,7 +31,7 @@ mantido por `python3 .claude/tools/frente.py` (open/pause/resume/close); a tabel
 <!-- tabela:begin -->
 | estado | frente | campanha | desde / entrega | objetivo |
 |---|---|---|---|---|
-| pausada | onda1 | campanhas/onda1 | 2026-10-04 | Onda 1: estado, hook e portões (co_estado/co_hook/co_portao). Pausada em 2026-10-05 por custo; rodada 2, etapa correcao, frente A interrompida. |
+| ativa | onda1 | campanhas/onda1 | 2026-10-04 | Onda 1: estado, hook e portões (co_estado/co_hook/co_portao). Pausada em 2026-10-05 por custo; rodada 2, etapa correcao, frente A interrompida. |
 | entregue | onda0 | campanhas/onda0 | 2026-10-04 · commit 5e9e6f7 | Onda 0: contrato, máquina, portões, invariantes, ondas e formatos (references/) |
 <!-- tabela:end -->
 

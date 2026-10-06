@@ -2,14 +2,15 @@
 
 <!-- carimbo:begin -->
 ```
-carimbo construcao-orquestrada · 2026-10-06T12:52:22-0300
-branch main @ 3fbc46c (repo construcao-orquestrada) · último commit da skill: 3fbc46c construcao-orquestrada onda 0 + onda 1 em andamento — projeto completo de desenvolvimento
+carimbo construcao-orquestrada · 2026-10-06T13:27:33-0300
+branch main @ 54afc00 (repo construcao-orquestrada) · último commit da skill: 54afc00 construcao-orquestrada onda 0 + onda 1 em andamento — projeto completo de desenvolvimento
 versão: sem arquivo VERSION
-campanha ativa: nenhuma  · frentes pausadas: onda1
-arquivos sujos na skill: 3 modificados, 0 não versionados
+campanha ativa: campanhas/onda1  · frentes pausadas: nenhuma
+arquivos sujos na skill: 3 modificados, 1 não versionados
+ M .claude/state/CAMPANHA_ATIVA
  M .claude/state/RESUME.md
- M .claude/tools/carimbo.sh
- M tests/onda1/_comum.py
+ M .claude/state/WORKFLOW.md
+?? campanhas/onda1/mutantes-r5/
 ```
 <!-- carimbo:end -->
 
@@ -43,10 +44,25 @@ pelo projeto irmão ou pelo motor embutido (`.claude/tools/ac/`). Simulação de
 clone em outro caminho, sem auto-correcao instalada): carimbo e motor respondem; visível 188 OK (3.13), gerado 15
 OK (3.9), held-out 64 OK, revisao-v4 18 OK, harness 64 OK nos 2 Pythons; `checa_neg.py` pula (sem `CHECA_NEG_DIR`).
 
+## Atualização (2026-10-06, tarde)
+- **Publicado** (push autorizado pelo founder): `https://github.com/GlauberCasttro/construcao-orquestrada`
+  (branch `main`). Na máquina de origem, `~/.claude/skills/construcao-orquestrada` é LINK para este projeto.
+  Ainda sem `SKILL.md` (chega na onda 2): instalada, mas não aparece como skill.
+- **Frente `onda1` RETOMADA** (founder: "siga com o que falta", confirmando o custo da prova): prova independente
+  em andamento com 2 agentes NOVOS, só leitura do produto, cada um numa cópia em `campanhas/work/`:
+  - mutação: `campanhas/work/onda1-prova-mut/` → relatório em `campanhas/onda1/mutantes-r5/relatorio.{md,json}`
+    (≥ 100 mutantes próprios + sobreviventes do M3; critério ≥ 80% e todos os de retorno constante mortos);
+  - verificador cego: `campanhas/work/onda1-prova-cego/` → `campanhas/onda1/relatorios/V5.md` + `V5-repro/`
+    (contra o contrato da onda 0; achado só com reprodução executada).
+  Se a sessão cair antes dos relatórios: os agentes não deixam estado no produto; recomece pelos mesmos passos.
+- **Recomendações da IA ao founder (NÃO são decisões; aguardam a resposta dele):** CO-1 = SIM (dispensa de item
+  exige a senha do founder, como os demais portões humanos); P-01 = SIM e ANTES da onda 2.
+
 ## Próximos passos
-1. O founder decide: prova independente da onda 1 (confirmar o CUSTO da rodada de mutação antes), CO-1 e P-01.
-2. Se seguir a onda 1: `new-front onda1-retomada` (campanha nova no motor embutido; os ledgers antigos ficaram
-   na máquina de origem) -> mutação + verificador cego novos -> portão -> fechamento pelo fluxo.
-3. Em máquina nova: `guard-privacidade.sh --install-hook`, criar `local/termos-privados.txt`, definir a frase-senha
-   no terminal (`python3 .claude/tools/ac/ac.py frase definir`).
-4. Push, remoto e o link `~/.claude/skills/construcao-orquestrada` -> projeto: só depois da revisão do founder.
+1. Ler `mutantes-r5/relatorio.md` e `relatorios/V5.md`. Critério atingido e nenhum achado alto ⇒ fechar a frente
+   onda1 pelo fluxo (portão → conferir-commit → commit → `frente.py close onda1 --commit <hash>`).
+   Não atingido ⇒ frente de correção: oráculo novo por agente separado (sobreviventes/achados) → aprovação do
+   founder com senha → corretor na cópia → portão.
+2. Founder decide CO-1 e P-01 (recomendações acima); registrar em DECISIONS.md como D-nn com data do sistema.
+3. Em máquina nova: abrir o Claude no projeto e `/load-session`; senha (`frase definir`) só quando uma aprovação
+   pedir, digitada pelo founder no terminal dele.

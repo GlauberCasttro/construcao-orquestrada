@@ -2,15 +2,15 @@
 
 <!-- carimbo:begin -->
 ```
-carimbo construcao-orquestrada · 2026-10-06T13:27:33-0300
-branch main @ 54afc00 (repo construcao-orquestrada) · último commit da skill: 54afc00 construcao-orquestrada onda 0 + onda 1 em andamento — projeto completo de desenvolvimento
+carimbo construcao-orquestrada · 2026-10-06T17:29:21-0300
+branch main @ 38bbccf (repo construcao-orquestrada) · último commit da skill: 38bbccf state: sessão salva — publicado e linkado; onda 1 retomada (prova independente em andamento)
 versão: sem arquivo VERSION
 campanha ativa: campanhas/onda1  · frentes pausadas: nenhuma
-arquivos sujos na skill: 3 modificados, 1 não versionados
- M .claude/state/CAMPANHA_ATIVA
+arquivos sujos na skill: 1 modificados, 3 não versionados
  M .claude/state/RESUME.md
- M .claude/state/WORKFLOW.md
 ?? campanhas/onda1/mutantes-r5/
+?? campanhas/onda1/relatorios/V5-repro/
+?? campanhas/onda1/relatorios/V5.md
 ```
 <!-- carimbo:end -->
 
@@ -55,14 +55,25 @@ OK (3.9), held-out 64 OK, revisao-v4 18 OK, harness 64 OK nos 2 Pythons; `checa_
   - verificador cego: `campanhas/work/onda1-prova-cego/` → `campanhas/onda1/relatorios/V5.md` + `V5-repro/`
     (contra o contrato da onda 0; achado só com reprodução executada).
   Se a sessão cair antes dos relatórios: os agentes não deixam estado no produto; recomece pelos mesmos passos.
+- **Resultado do verificador cego V5: NO-GO** (`campanhas/onda1/relatorios/V5.md`; reproduções em `V5-repro/`,
+  `python3 -m unittest test_v5` dentro dela). Reproduzido pelo orquestrador nos 2 Pythons: 7 falhas (achados) +
+  3 controles OK. ALTOS: **A1** aprovação de portão humano forjável pela API (`transicionar(..., _humano=...)` sem
+  tty, e o cruzamento ledger×audit aceita audit forjado; o hook só reconhece os módulos co/ac); **A2** brace
+  expansion acima de 256 resultados passa no hook e apaga o ledger (corte silencioso da expansão). MÉDIOS: M1/M1b
+  queda no meio da aprovação trava a obra (ledger antes do audit; arquivo de aprovação órfão); M2 guardas leem
+  stop/max_horas reescritos depois de `premissas_ok` sem conferir hash; M3 task aceita com verificador e testes
+  autodeclarados. Refutados com contra-evidência: V4-1, V4-8 (max_rodadas/teto), V4-9 por exceção, waiver por
+  item, relatório obsoleto ⇒ NO-GO, `_task_valida`, várias classes de bypass do hook.
+- **Mutação r5 (em andamento quando salvo):** parcial 172 mortos / 50 vivos (~77%, abaixo da meta de 80%);
+  relatório final ainda não escrito (`campanhas/onda1/mutantes-r5/`, não versionado até terminar).
 - **Recomendações da IA ao founder (NÃO são decisões; aguardam a resposta dele):** CO-1 = SIM (dispensa de item
   exige a senha do founder, como os demais portões humanos); P-01 = SIM e ANTES da onda 2.
 
 ## Próximos passos
-1. Ler `mutantes-r5/relatorio.md` e `relatorios/V5.md`. Critério atingido e nenhum achado alto ⇒ fechar a frente
-   onda1 pelo fluxo (portão → conferir-commit → commit → `frente.py close onda1 --commit <hash>`).
-   Não atingido ⇒ frente de correção: oráculo novo por agente separado (sobreviventes/achados) → aprovação do
-   founder com senha → corretor na cópia → portão.
+1. A prova NÃO passou (V5 NO-GO). Quando o `mutantes-r5/relatorio.md` sair: abrir a FRENTE DE CORREÇÃO da onda 1
+   (`new-front onda1-correcao`): oráculo = `V5-repro/test_v5.py` (escrito pelo verificador cego, separado do
+   corretor) + testes para os mutantes vivos de r5 (por agente separado) → aprovação do founder com senha →
+   corretor na cópia → portão → commit. Depois, NOVA prova independente (mutação e verificador cego novos).
 2. Founder decide CO-1 e P-01 (recomendações acima); registrar em DECISIONS.md como D-nn com data do sistema.
 3. Em máquina nova: abrir o Claude no projeto e `/load-session`; senha (`frase definir`) só quando uma aprovação
    pedir, digitada pelo founder no terminal dele.
